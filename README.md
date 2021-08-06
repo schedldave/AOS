@@ -7,7 +7,7 @@ The algorithms are implemented with C++ and Python code.
 
 🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU's AOS](https://github.com/JKU-ICG/AOS)!
 
-🆕 For a list of updates see the [changelog](LFR/README#changelog).
+🆕 For a list of updates see the [changelog](LFR/README.md#changelog).
 
 ## AOS: Airborne Optical Sectioning
 

@@ -19,7 +19,7 @@ We provide Python bindings, which make it easy to use the renderer in Python pro
 To compile the renderer with the GUI in native C++ follow the steps below:
 ### vcpkg and CMake:
 
-Make sure that [vcpkg](https://github.com/microsoft/vcpkg) is installed and define an `VCPKG_ROOT` environment variable. Note, that it also works without the environment variable. Just adjust the paths accordingly. 
+Make sure that [vcpkg](https://github.com/microsoft/vcpkg) is installed and define an `VCPKG_ROOT` environment variable (it also works without the environment variable; just adjust the paths accordingly). 
 Install `assimp` and `glfw3` via vcpkg.
 To build the module, make [LFR](/LFR) the current directory and run the following Powershell commands:
 ```pwsh
