@@ -18,7 +18,8 @@ class Shader;
 
 typedef struct {
 	//Image* img;
-	glm::mat4 pose;
+	glm::mat4 corr; // correction applied on pose (e.g. compass corrections)
+	glm::mat4 pose; // pose (usually provided by pose file)
 	unsigned int ogl_id; // opengl texture id
 	std::string name;
 } View;
@@ -72,6 +73,12 @@ public:
 	void setDEMTransformation(const glm::mat4 model) { dem_transf = model; }
 	void setDEMTransformation(const glm::vec3 translation, const glm::vec3 eulerAngles = glm::vec3(0));
 	glm::mat4 getDEMTransformation() const { return dem_transf; }
+	
+	// Pose Corrections
+	void setPoseCorrection( const unsigned int index,const glm::vec3 translation, const glm::vec3 eulerAngles = glm::vec3(0));
+	glm::mat4 getPoseCorrection( const unsigned int index ) const { return ogl_imgs[index].corr; }
+	void resetPoseCorrection( const unsigned int index ){setPoseCorrection(index, glm::vec3(0), glm::vec3(0));};
+
 
 	Image render(const glm::mat4 virtual_pose, const float virtual_fovDegree, const std::vector<unsigned int> ids = {});
 	Image renderForward(const glm::mat4 virtual_pose, const float virtual_fovDegree, const std::vector<unsigned int> ids = {});
@@ -81,7 +88,7 @@ public:
 	//void display(int display_width, int display_height,  bool normalize = true);
 
 	//void loadViews(std::string json_file, std::string imgs_path = "") {};
-	unsigned int getViews() { return ogl_imgs.size(); }
+	unsigned int getViews() { return (unsigned int)ogl_imgs.size(); }
 	unsigned int getSize() { return getViews(); } // legacy
 
 	float getNearPlane() { return near_plane; }

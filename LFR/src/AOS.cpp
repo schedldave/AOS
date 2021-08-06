@@ -29,11 +29,33 @@ AOS::AOS(unsigned int width, unsigned int height, float fovDegree, int prealloca
 
 	// build and compile shaders
 	// -------------------------
-	showFboShader = new Shader("../shader/show_fbo.vs.glsl", "../shader/show_fbo.fs.glsl");
-	projectShader = new Shader("../shader/deferred_project_image.vs.glsl", "../shader/deferred_project_image.fs.glsl");
-	demShader = new Shader("../shader/project_image.vs.glsl", "../shader/show_fbo.fs.glsl");
-	gBufferShader = new Shader("../shader/g_buffer.vs.glsl", "../shader/g_buffer.fs.glsl");
-	forwardShader = new Shader("../shader/project_image.vs.glsl", "../shader/project_image.fs.glsl");
+	showFboShader = new Shader( 
+		#include "../shader/show_fbo.vs.glsl"
+		, 
+		#include "../shader/show_fbo.fs.glsl"
+	);
+	projectShader = new Shader(
+		#include "../shader/deferred_project_image.vs.glsl"
+		, 
+		#include "../shader/deferred_project_image.fs.glsl"
+	);
+	demShader = new Shader(
+		#include "../shader/project_image.vs.glsl"
+		,
+		#include "../shader/show_fbo.fs.glsl"
+	);
+	gBufferShader = new Shader(
+		#include "../shader/g_buffer.vs.glsl"
+		, 
+		#include "../shader/g_buffer.fs.glsl"
+	);
+	forwardShader = new Shader(
+		#include "../shader/project_image.vs.glsl"
+		,
+		#include "../shader/project_image.fs.glsl"
+	);
+	// Shaders are now included as strings and thus compiled into the application. So it is not important to have a relative shader folder after compilation!
+	// The idea is from https://stackoverflow.com/questions/20443560/how-to-practically-ship-glsl-shaders-with-your-c-software
 	CHECK_GL_ERROR
 
 	projection_imgs = glm::perspective(glm::radians(fovDegree), view_aspect, near_plane, far_plane);
@@ -106,7 +128,7 @@ Image AOS::render(const glm::mat4 virtual_pose, const float virtualFovDegrees, c
 	//unsigned int counter = 0;
 	for (unsigned int idx : _ids)
 	{
-		auto projViewMatrix = projection_imgs * ogl_imgs[idx].pose;
+		auto projViewMatrix = projection_imgs * ogl_imgs[idx].corr * ogl_imgs[idx].pose ;
 		projectShader->setMat4("projViewMatrix", projViewMatrix);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, ogl_imgs[idx].ogl_id);
@@ -167,7 +189,7 @@ Image AOS::renderForward(const glm::mat4 virtual_pose, const float virtualFovDeg
 	//unsigned int counter = 0;
 	for (unsigned int idx : _ids)
 	{
-		auto projViewMatrix = projection_imgs * ogl_imgs[idx].pose;
+		auto projViewMatrix = projection_imgs * ogl_imgs[idx].corr * ogl_imgs[idx].pose  ;
 		forwardShader->setMat4("projViewMatrix", projViewMatrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, ogl_imgs[idx].ogl_id);
@@ -221,11 +243,22 @@ void AOS::setDEMTransformation(const glm::vec3 translation, const glm::vec3 eule
 	glm::mat4 trans_mat = glm::translate(glm::mat4(1.0f), translation);
 	auto rot_mat = glm::eulerAngleXYZ(eulerAngles.x,eulerAngles.y,eulerAngles.z); // should be similar to legacy renderer! 
 	dem_transf = trans_mat * rot_mat;
+
+	//std::cout << "AOS.cpp: setDEMTransformation with transl: " << glm::to_string(translation) << " rotation: "<< glm::to_string(eulerAngles) <<std::endl;
 }
+
+void AOS::setPoseCorrection( const unsigned int index,const glm::vec3 translation, const glm::vec3 eulerAngles)
+{
+	glm::mat4 trans_mat = glm::translate(glm::mat4(1.0f), translation);
+	auto rot_mat = glm::eulerAngleXYZ(eulerAngles.x,eulerAngles.y,eulerAngles.z); // should be similar to legacy renderer! 
+	ogl_imgs[index].corr = trans_mat * rot_mat;
+}
+
 
 void AOS::addView(Image img, glm::mat4 pose, std::string name)
 {
 	View view;
+	view.corr = glm::mat4(1); // identity
 	view.pose = pose;
 	view.name = name.empty() ? std::to_string(ogl_imgs.size()) : name;
 	//float pixelvalue = get_pixel(img,1,1,0);
@@ -342,14 +375,14 @@ void AOS::initFrameBufferTexture(unsigned int* fbo, unsigned int* texture)
 	// position color buffer
 	glGenTextures(1, texture);
 	glBindTexture(GL_TEXTURE_2D, *texture);
-//#ifdef GL_EXT_color_buffer_float
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, render_width, render_height, 0, GL_RGBA, GL_FLOAT, NULL);
-//#elif GL_EXT_color_buffer_half_float
+#ifdef GL_EXT_color_buffer_float
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, render_width, render_height, 0, GL_RGBA, GL_FLOAT, NULL);
+#elif GL_EXT_color_buffer_half_float
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, render_width, render_height, 0, GL_RGBA, GL_FLOAT, NULL);
-//#else
-//	static_assert(true, "Error: floating point framebuffer not supported!");
-//	throw std::runtime_error("Error: floating point framebuffer not supported!");
-//#endif
+#else
+	static_assert(true, "Error: floating point framebuffer not supported!");
+	throw std::runtime_error("Error: floating point framebuffer not supported!");
+#endif
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texture, 0);

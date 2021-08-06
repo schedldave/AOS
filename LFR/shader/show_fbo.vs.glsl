@@ -1,3 +1,4 @@
+R"(
 #version 310 es
 #extension GL_EXT_shader_io_blocks : enable
 precision highp float;
@@ -15,3 +16,4 @@ void main()
     TexCoords = aTexCoords;
     gl_Position = vec4(aPos, 1.0);
 }
+)"

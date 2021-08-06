@@ -119,18 +119,20 @@ class TestAOSRenderTwice(unittest.TestCase):
         self.assertTrue(np.isclose(xyz[:,:,2],-100.0).all())
 
         # translate the DEM up 
-        _aos.setDEMTransform( [0,0,10] )
+        _aos.setDEMTransform( [0,0,30] )
         _aos.render(pose, self._fovDegrees, [1])
         xyz = _aos.getXYZ()
         print(xyz)
-        self.assertTrue(np.isclose(xyz[:,:,2],-90.0).all())
+        self.assertTrue(np.isclose(xyz[:,:,2],-70.0).all())
 
         # translate the DEM down 
-        _aos.setDEMTransform( [0,0,-20] )
+        transl = -20
+        _aos.setDEMTransform( [0,0,transl] )
         _aos.render(pose, self._fovDegrees, [1])
         xyz = _aos.getXYZ()
-        print(xyz[:,:,2])
-        self.assertTrue(np.isclose(xyz[:,:,2],-120.0).all())
+        print(xyz)
+        #print(xyz[:,:,2])
+        self.assertTrue(np.isclose(xyz[:,:,2],-100.0+transl).all())
 
         _aos.removeView(0)
         self.assertTrue(_aos.getSize()==1)

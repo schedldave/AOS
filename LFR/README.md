@@ -2,7 +2,7 @@
 # AOS/LFR: A Light-Field Renderer for Airborne Optical Sectioning
 
 This is a C++ implementation of the Light-Field Renderer for Airborne Optical Sectioning. 
-It is based on OpenGL, uses [Dear ImGui](https://github.com/ocornut/imgui) and [WGLF](https://www.glfw.org/) for a basic user interface, and uses [Assimp](https://www.assimp.org/) to load a digital terrain.
+It is based on OpenGL, uses [Dear ImGui](https://github.com/ocornut/imgui) and [GLFW](https://www.glfw.org/) for a basic user interface, and uses [Assimp](https://www.assimp.org/) to load a digital terrain.
 
 ![alt text](../img/LFR.gif)
 
@@ -50,4 +50,5 @@ Some of the features that will be nice to have or are on our agenda for implemen
 - [ ] Unittests in C++: https://cmake.org/cmake/help/latest/module/CTest.html  
 - [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648
 - [ ] Optimize min/max computation (only used for displaying)
+- [ ] Heatmap visualization
 

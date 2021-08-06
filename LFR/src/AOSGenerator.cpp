@@ -67,6 +67,11 @@ glm::mat4 ParseMatrix(json::value_type jMat) // Matrice 3x4
 void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std::string& imgFilePath, bool replaceExt)
 {
 	std::ifstream poseStream(jsonPoseFile);
+	if ( poseStream.fail() )
+	{
+		std::cout << "Could not read " << jsonPoseFile << std::endl;
+		std::cout << "Error: " << strerror(errno) << std::endl;
+	}
 	json j;
 	poseStream >> j; // parse json
 	poseStream.close();

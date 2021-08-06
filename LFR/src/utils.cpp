@@ -3,7 +3,10 @@
 #endif
 #include "utils.h"
 #include <stdio.h>
+#ifdef WIN32
+#define _CRT_RAND_S // needed for rand_s
 #include <stdlib.h>
+#endif
 #include <string.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -12,6 +15,8 @@
 #include <assert.h>
 #include <float.h>
 #include <limits.h>
+
+
 
 
 

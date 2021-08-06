@@ -126,6 +126,9 @@ int InitWindowAndGUI(int &width, int &height, const char* appname = "OpenGL")
     }
     else
         return -1;
+
+    return 0;
+
 }
 
 bool firstUpdate = true;

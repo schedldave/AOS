@@ -20,6 +20,10 @@
 #include <iostream>
 #include <algorithm>    // std::min
 #include <chrono> // for timings
+#include <iostream>
+#include <string>
+
+#include <CLI11/CLI11.hpp> // for argument parsing
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -83,8 +87,45 @@ void showFPS(GLFWwindow *pWindow)
 	}
 }
 
-int main()
+int main(int argc, char** argv) 
 {
+    
+    // Options (&defaults):
+    std::string demFile = "../data/zero_plane.obj";
+    float fovDegree = 43.10803984095769F; // degrees
+    std::string posesFile = "../data/F0/poses/poses_first30.json";
+    std::string imgFolder = "../data/F0/images_ldr/";
+    float demTranslationZ = 0.0f;
+    bool tmp_replaceTiff = false;
+
+    // Command line parsing
+    CLI::App app{ APP_NAME };
+    app.add_option("--fov",  fovDegree, "Field of view of the cameras in degrees.");
+    app.add_option("--dem",  demFile, "The path to the digital elevaltion model (DEM).");
+    app.add_option("--pose", posesFile, "The path to the poses in a json format.");
+    app.add_option("--img",  imgFolder, "The path to the images in POSES.");
+    app.add_option("-r,--replaceTiff",  tmp_replaceTiff, "Replace .tiff with .png in the POSES file.");
+    app.add_option("-z,--ztranslDEM",  demTranslationZ, "Translate the DEM on the z axis.");
+    app.add_option("-v,--view",  currView, "view index for startup");
+    CLI11_PARSE(app, argc, argv);
+
+    bool replaceTiff = tmp_replaceTiff || (0==imgFolder.compare("../data/F0/images_ldr/")); // this makes sure that replaceTiff is true with the F0 ldr scene
+
+
+    std::cout << "Settings " << std::endl;
+    std::cout << "  field of view: " << fovDegree << " (degrees) " << std::endl;
+    std::cout << "  digital elevation model file: " << demFile << " " << std::endl;
+    std::cout << "  pose file: " << posesFile << " " << std::endl;
+    std::cout << "  image folder: " << imgFolder << " " << std::endl;
+    std::cout << "  replace tiff: " << (replaceTiff ? "yes" : "no") << " " << std::endl;
+    std::cout << "  z translation of the DEM: " << demTranslationZ << " " << std::endl;
+    std::cout << "  startup view: " << currView << " " << std::endl;
+
+
+
+
+
+
     int display_w = 1024, display_h = 1024;
 
 
@@ -103,10 +144,10 @@ int main()
 
 	int texture_units;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
-	//std::cout << texture_units << " texture units available!" << std::endl;
+	std::cout << texture_units << " texture units available!" << std::endl;
 	// https://stackoverflow.com/questions/46426331/number-of-texture-units-gl-texturei-in-opengl-4-implementation-in-visual-studi
 
-    lf = new AOS(SCR_WIDTH, SCR_HEIGHT, 43.10803984095769);
+    lf = new AOS(SCR_WIDTH, SCR_HEIGHT, fovDegree); 
     CHECK_GL_ERROR
 
     // load the DEM 
@@ -114,18 +155,19 @@ int main()
     // auto dem = Model("../data/dem.obj");
     //auto demTexture = loadImageSTBI("../data/dem.png", true); // tell stb_image.h to flip loaded texture's on the y-axis
     //float demAlpha = .25; // .25;
-    lf->loadDEM("../data/F0/DEM/dem.obj");
+    //lf->loadDEM("../data/F0/DEM/dem.obj");
+    lf->loadDEM(demFile);
     //lf->loadDEM("D:\\ResilioSync\\ANAOS\\SITES\\Test20210415_Conifer_f1\\LFR\\dem.obj");
 	CHECK_GL_ERROR
+    std::cout << "DEM loaded!" << std::endl;
 
 
 	// load the light field (matrices, textures, names ...)
 	// -----------------------
 	AOSGenerator generator;
-	//generator.Generate( lf, "../data/F0/poses/poses.json", "../data/F0/images_ldr/", true);
-	// faster, due to less images: 	
-    generator.Generate(lf, "../data/F0/poses/poses_first30.json", "../data/F0/images_ldr/", true);
+    generator.Generate(lf, posesFile, imgFolder, replaceTiff);
 	CHECK_GL_ERROR
+    std::cout << "LF with " << lf->getViews() << " views loaded!" << std::endl;
 
 
 
@@ -135,6 +177,15 @@ int main()
     std::vector<unsigned int> render_ids;
     for (unsigned int i = 0; i < lf->getSize(); i++)
             render_ids.push_back(i);
+
+
+    // set the startup view
+    camera.Position = lf->getPosition(currView);
+    camera.Front = lf->getForward(currView);
+    camera.Up = lf->getUp(currView);
+    
+    // set startup DEM transformation
+    lf->setDEMTransformation( glm::vec3(0,0,demTranslationZ), glm::vec3(0) );
 
     // render loop
     // -----------
@@ -165,7 +216,8 @@ int main()
             // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
             {   char buffer[512];
                 sprintf_s(buffer, 512, "%s (fps: %.1f)", APP_NAME, ImGui::GetIO().Framerate);
-                ImGui::Begin(APP_NAME);
+                static bool open_window = true;
+                ImGui::Begin(APP_NAME, &open_window, ImGuiWindowFlags_NoBackground );
                 ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
                 //ImGui::SliderFloat("gamma", &gamma, 0.1f, 5.0f);   // Edit 1 float using a slider from 0.0f to 1.0f
 
@@ -218,21 +270,45 @@ int main()
                 {
                     std::vector<bool> selected;
                     idxToBoolArray(render_ids, selected, lf->getSize());
-                    ImGui::BeginChild("Views scrolling");
+                    ImGui::BeginChild("Views scrolling", ImVec2(0,-200)); // begin scrolling
                     for (int n = 0; n < lf->getSize(); n++) {
-                        sprintf_s( buffer, 512, "[%c] %04d: %s ", selected[n]?'x':' ', n, lf->getName(n).c_str() );
+                        sprintf_s( buffer, 512, "[%c] %04d: %s ", selected[n]?'X':' ', n, lf->getName(n).c_str() );
                         bool sel = selected[n];
                         ImGui::Selectable(buffer, &sel );
                         selected[n] = sel;
                     }
-                    ImGui::EndChild();
+                    ImGui::EndChild(); // end scrolling
+                    if (ImGui::TreeNode("Corrections"))
+                    {
+                        static auto translate = glm::vec3(0);
+                        static auto rotate = glm::vec3(0);
+                        /*static auto correct_all = true;
+                        static auto correct_id = currView;
+
+                        ImGui::Text("affect"); ImGui::SameLine();
+                        ImGui::Checkbox("all images ", &correct_all);
+                        if(!correct_all){
+                            ImGui::SameLine();
+                            ImGui::InputInt("single image", &correct_id);
+                        }*/
+                        ImGui::SliderFloat3("Translation", &(translate.x),-10,10);
+                        ImGui::SliderFloat3("Rotation", &(rotate.x), -180, 180, "%.1f (deg)" );
+
+                        // update correction matrizes
+                        for (unsigned int i = 0; i < lf->getSize(); i++)
+                            lf->setPoseCorrection( i, translate,  glm::radians(rotate) );
+
+
+                        ImGui::TreePop();
+                    }
+
                     ImGui::TreePop();
                     boolArrayToIdx(selected, render_ids);
                 }   
 
                 if (ImGui::TreeNode("DEM"))
                 {
-                    static auto dem_translate = glm::vec3(0);
+                    static auto dem_translate = glm::vec3(0,0,demTranslationZ);
                     static auto dem_rotate = glm::vec3(0);
                     auto dem = lf->getDEM();
                     auto num_meshes = dem->meshes.size();
@@ -241,8 +317,16 @@ int main()
                         num_vertices += dem->meshes[i].vertices.size();
                     sprintf_s(buffer, 512, "%s (%d meshes with %d vertices)", "DEM", num_meshes, num_vertices );
                     ImGui::Text(buffer);
-                    ImGui::SliderFloat3("Translation", &(dem_translate.x), -30, 30);
-                    ImGui::SliderFloat3("Rotation", &(dem_rotate.x), -180, 180, "%.1f °" );
+                    ImGui::SliderFloat2("Translation (x,y)", &(dem_translate.x),-100,100);
+                    { // same line
+                        ImGui::InputFloat("##demz", &(dem_translate.z)); 
+                        ImGui::SameLine();
+                        if (ImGui::Button("-")) { dem_translate.z -= 1; }
+                        ImGui::SameLine();
+                        if (ImGui::Button("+")) { dem_translate.z += 1; }
+                        ImGui::SameLine();  ImGui::Text("(z)");
+                    }
+                    ImGui::SliderFloat3("Rotation", &(dem_rotate.x), -180, 180, "%.1f (deg)" );
                     lf->setDEMTransformation(dem_translate, glm::radians(dem_rotate) );
 
                     ImGui::TreePop();
