@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     // Command line parsing
     CLI::App app{ APP_NAME };
     app.add_option("--fov",  fovDegree, "Field of view of the cameras in degrees.");
-    app.add_option("--dem",  demFile, "The path to the digital elevaltion model (DEM).");
+    app.add_option("--dem",  demFile, "The path to the digital elevation model (DEM).");
     app.add_option("--pose", posesFile, "The path to the poses in a json format.");
     app.add_option("--img",  imgFolder, "The path to the images in POSES.");
     app.add_option("-r,--replaceTiff",  tmp_replaceTiff, "Replace .tiff with .png in the POSES file.");

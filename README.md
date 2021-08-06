@@ -1,4 +1,15 @@
-# AOS: Airborne Optical Sectioning
+# AOS-LFR: A light-field renderer for airborne light fields.
+
+A light-field renderer for airborne light fields.
+This repository contains updates and improvements for the LFR module of [JKU's AOS](https://github.com/JKU-ICG/AOS) repository. 
+Note that the original [JKU's AOS](https://github.com/JKU-ICG/AOS) repository contains several modules, whereas this repo just focuses on light-field rendering. 
+The algorithms are implemented with C++ and Python code.
+
+🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU's AOS](https://github.com/JKU-ICG/AOS)!
+
+🆕 For a list of updates see the [changelog](LFR/README#changelog).
+
+## AOS: Airborne Optical Sectioning
 
 Airborne Optical Sectioning (AOS) is a wide synthetic-aperture imaging technique that employs manned or unmanned aircraft, to sample images within large (synthetic aperture) areas from above occluded volumes, such as forests. Based on the poses of the aircraft during capturing, these images are computationally combined to integral images by light-field technology. These integral images suppress strong occlusion and reveal targets that remain hidden in single recordings.
 
@@ -9,35 +20,7 @@ Single Images         |  Airborne Optical Sectioning
 > Source: [Video on YouTube](https://www.youtube.com/watch?v=kyKVQYG-j7U) | [FLIR](https://www.flir.com/discover/cores-components/researchers-develop-search-and-rescue-technology-that-sees-through-forest-with-thermal-imaging/)
  
 
-This repository contains [software modules](#modules) for drone-based search and rescue applications with airborne optical sectioning, as discussed in our [publications](#publications). It is made available under a [dual licence model](#license).
-
-## Contacts
-Univ.-Prof. Dr. Ing. habil. Oliver Bimber
-<br />
-<br />Johannes Kepler University Linz
-<br />Institute of Computer Graphics
-<br />Altenberger Straße 69
-<br />Computer Science Building
-<br />3rd Floor, Room 0302
-<br />4040 Linz, Austria 
-<br />
-<br />Phone: +43-732-2468-6631 (secretary: -6630)
-<br />Web: www.jku.at/cg 
-<br />Email: oliver.bimber@jku.at
-
-## Sponsors
-- Austrian Science Fund (FWF)
-- State of Upper Austria, Nationalstiftung für Forschung, Technologie und Entwicklung
-- Linz Institute of Technology (LIT) 
-
-## News (see also [Press](https://www.jku.at/en/institute-of-computer-graphics/press-events/press))
-
-- 06/23/2021: **Science Robotics** paper appeared. See [publications](#publications) (Autonomous Drones for Search and Rescue in Forests)  
-- 5/31/2021: **New combined people classifer** outbeats classical people classifers significantly. See [publications](#publications) (Combined People Classification with Airborne Optical Sectioning) 
-- 04/15/2021: First AOS experiments with **DJI M300RTK** reveals remarkable results (much better than with our OktoXL 6S12, due to higher GPS precission and better IR camera/stabilizer). 
-
-
-## Publications
+## Related-Publications
 
 - Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Combined People Classification with Airborne Optical Sectioning, IEEE SENSORS JOURNAL (under review), (2021)
   - [arXiv (pre-print)](https://arxiv.org/abs/2106.10077)  
@@ -74,68 +57,10 @@ Univ.-Prof. Dr. Ing. habil. Oliver Bimber
   - [MDPI (open access and final version)](https://www.mdpi.com/2313-433X/4/8/102)
   - [Video on YouTube](https://www.youtube.com/watch?v=ELnvBfafnRA&ab_channel=JKUCG) 
 
-
-## Modules
-
-- [LFR](LFR/README.md)      (C++ and Python code): computes integral images.
-- [DET](DET/README.md)      (Python code): contains the person classification.
-- [CAM](CAM/README.md)      (Python code): the module for triggering, recording, and processing thermal images.
-- [PLAN](PLAN/README.md)    (Python code): implementation of our path planning and adaptive sampling technique.
-- [DRONE](DRONE/README.md)  (C and Python code): contains the implementation for drone communication and the logic to perform AOS flights.
-- [SERV](SERV/README.md)  (Rust code): contains the implementation of a dabase server to which AOS flights data are uploaded.
-
-Note that the modules LFR, DET, CAM, PLAN, SERV are standalone software packages that can be installed and used independently. The DRONE module, however, relies on the other modules (LFR, DET, CAM, PLAN, SERV) in this repository.
-
-
 ## Installation
-
-To install the individual modules, refer to the [module's README](#modules).
-For the Python modules (DET, CAM, PLAN) it is sufficient to verify that the [required Python libraries](../requirements.txt) are available. Furthermore, the classifier (DET) relies on the [OpenVINO toolkit](https://docs.openvinotoolkit.org/latest/index.html). 
-The modules containing C/C++ code (LFR, DRONE) need to be compiled before they can be used. 
-Similarily the module containing Rust code (SERV) need to be compiled before it can be used.
-All other modules (LFR, DET, CAM, PLAN, SERV) have to be installed before the DRONE module can be used.
-
-
-## Hardware
-
-For our prototype, an octocopter (MikroKopter OktoXL 6S12, two LiPo 4500 mAh batteries, 4.5 kg to 4.9 kg) carries our payload. In the course of the project 3 versions of payloads with varying components have been used.
-
-Prototype        |  Payload
-:-------------------------:|:-------------------------:
-![prototype_2021](./img/prototype_2021.jpg) | ![payload](./img/payload.svg)
-
-### Payload Version 1
-Initially, the drone was equipped with a thermal camera (FlirVue Pro; 9 mm fixed focal length lens; 7.5 μm to 13.5 μm spectral band; 14 bit non-radiometric) and an RGB camera (Sony Alpha 6000; 16 mm to 50 mm lens at infinite focus).
-The cameras were fixed to a rotatable gimbal, were triggered synchronously (synched by a MikroKopter CamCtrl controlboard), and pointed downwards during all flights. 
-The flight was planned using MikroKopter's flight planning software and uploaded to the drone as waypoints. 
-The waypoint protocol triggered the cameras every 1m along the flight path, and the recorded images were stored on the cameras’ internal memory cards. Processing was done offline after landing the drone.
-
-### Payload Version 2
-For the second iteration, the RGB camera was removed. 
-Instead we mounted a single-board  system-on-chip computer (SoCC) (RaspberryPi 4B; 5.6 cm × 8.6 cm; 65 g; 8 GB ram), an LTE communication hat (Sixfab 3G/4G & LTE base hat and a SIM card; 5.7 cm × 6.5 cm; 35 g), and a Vision Processing Unit (VPU) (Intel Neural Compute Stick 2; 7.2 cm × 2.7 cm × 1.4 cm; 30 g). The equipments weighted 320 g and was mounted on the rotatable gimbal. 
-In comparison to Version 1, this setup allows full processing on the drone (including path planning and triggering the camera).
-
-### Payload Version 3
-The third version additionally mounts a Flir power module providing HDMI video output from the camera (640x480, 30 Hz; 15 g), and a video capture card (totaling 350g).
-In comparison to Version 2, this setup allows faster thermal recordings and thus faster flying speeds.
-This repository is using Version 3 of our Payload right now.
-
-
-## Data
-
-We provide exemplary datasets in the [`data/open_field`](data/open_field), and [`LFR/data/F0`](LFR/data/F0) folders.
-The digital elevation models in the `DEM`subfolders, are provided by the Upper Austrian government, and are converted to meshes and hillshaded images with GDAL. 
-The `images` and `poses` are in the corresponding folders.
-The `F0` was recorded while flying over forest with the payload version 1 and is [available online](https://doi.org/10.5281/zenodo.3894773).
-The open field dataset is a linear flight without high vegetation and was recorded with payload version 3 in the course of the experimnents for the "Combined People Classification with Airborne Optical Sectioning" article.
-
-
-## Simulation
-
-A [simulator](https://aos.tensorware.app) for forest occlusion has been developed by Fracis Seits. The code is available [here](https://github.com/tensorware/aos-simulation).
-
+ 
+For installation instructions refer to the [README in LFR](LFR/README.md).
 
 ## License
-* Data: Creative Commons Attribution 4.0 International
-* Code Modules: You are free to modify and use our software non-commercially; Commercial usage is restricted (see the [LICENSE.txt](LICENSE.txt))
-* Occlusion Simulator: [MIT](https://github.com/tensorware/aos-simulation/blob/master/LICENSE) 
+* Code Modules: You are free to modify and use the software non-commercially; For commercial usage refer to the [original LICENSE](https://github.com/JKU-ICG/AOS/blob/stable_release/LICENSE.txt).
+
