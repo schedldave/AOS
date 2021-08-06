@@ -41,3 +41,7 @@ python/build/temp.win*
 
 # CMake stuff
 CMakeSettings.json
+
+# bin build folders
+bin
+build 
