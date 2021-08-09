@@ -1,11 +1,13 @@
 # AOS-LFR: A light-field renderer for airborne light fields.
 
 A light-field renderer for airborne light fields.
-This repository contains updates and improvements for the LFR module of [JKU's AOS](https://github.com/JKU-ICG/AOS) repository. 
-Note that the original [JKU's AOS](https://github.com/JKU-ICG/AOS) repository contains several modules, whereas this repo just focuses on light-field rendering. 
+You'll find more details in the [LFR folder](LFR)!
+
+This repository contains updates and improvements for the LFR module of [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository. 
+Note that the original [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository contains several modules, whereas this repo just focuses on light-field rendering. 
 The algorithms are implemented with C++ and Python code.
 
-🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU's AOS](https://github.com/JKU-ICG/AOS)!
+🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS)!
 
 🆕 For a list of updates see the [changelog](LFR/README.md#changelog).
 
