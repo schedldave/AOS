@@ -74,16 +74,23 @@ Our software builds on the following code/libraries/tools from:
 
 Some of the features that will be nice to have or are on our agenda for implementation:
 
-- [ ] support for masking / alpha channels (e.g., to remove FLIR watermark)
+- [ ] consider window size and aspect ratio for rendering (right now we use a default size e.g., 512x512 px)
+- [ ] support for masking / alpha channels (e.g., to remove FLIR/DJI watermarks or text)
 - [ ] render with RGB (3 channel) images. So far only grayscale has been tested.
-- [ ] optionally display a satelite image on the ground
 - [ ] show a wireframe of the digital elevation model
-- [ ] check if float32 ifdef is working on the Raspberry Pi
-- [ ] OBJ loading: switch to a more lightweight loader (e.g., https://github.com/tinyobjloader/tinyobjloader) or keep Assimp
+- [ ] check if float32 ifdef is working on LINUX and older hardware
 - [ ] Image loading: stb_image does not support TIFF so consider switching to FreeImage, SDL, or OpenCV
 - [ ] Unittests in C++: https://cmake.org/cmake/help/latest/module/CTest.html  
 - [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648
-- [ ] Optimize min/max computation (only used for displaying)
+- [ ] Optimize min/max computation (used for displaying)
 - [ ] Heatmap visualization
 - [x] command line arguments: https://github.com/CLIUtils/CLI11#install 
+
+
+## Ideas / Low priority
+
+- [ ] OBJ loading: switch to a more lightweight loader (e.g., https://github.com/tinyobjloader/tinyobjloader) or keep Assimp
+- [ ] optionally display a satelite image on the ground
+
+
 
