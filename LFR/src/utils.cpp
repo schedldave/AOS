@@ -3,7 +3,7 @@
 #endif
 #include "utils.h"
 #include <stdio.h>
-#ifdef WIN32
+#if defined(WIN32) || defined(_MSC_VER)
 #define _CRT_RAND_S // needed for rand_s
 #include <stdlib.h>
 #endif

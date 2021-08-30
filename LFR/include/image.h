@@ -93,6 +93,7 @@ Image load_image(const char *filename, int w = 0, int h  = 0, int c = 0);
 Image load_image_stb(const char* filename, int channels = 0);
 Image load_image_stb_resize(char *filename, int w, int h, int c);
 bool is_empty_image(Image img); // { return img.c == 0 || img.w == 0 || img.h == 0; }
+Image prepare_image_ogl(Image src, int channels = 0);
 //LIB_API Image load_image_color(char *filename, int w, int h);
 //Image **load_alphabet();
 

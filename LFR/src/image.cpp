@@ -1225,9 +1225,9 @@ Image load_image_stb(const char *filename, int channels)
     if(channels) c = channels;
     int i,j,k;
     Image im = make_image(w, h, c);
-    for(k = 0; k < c; ++k){
-        for(j = 0; j < h; ++j){
-            for(i = 0; i < w; ++i){
+    for(k = 0; k < c; ++k){ // k-->channel(c)
+        for(j = 0; j < h; ++j){ // j-->height(h)
+            for(i = 0; i < w; ++i){ // i-->width(w)
                 int dst_index = i + w*j + w*h*k;
                 int src_index = k + c*i + c*w*j;
                 im.data[dst_index] = (float)data[src_index]/255.;
@@ -1237,6 +1237,25 @@ Image load_image_stb(const char *filename, int channels)
     free(data);
     return im;
 }
+
+Image prepare_image_ogl(Image src, int channels/*=0*/)
+{
+    auto c = src.c;
+    auto w = src.w; auto h = src.h;
+    if(channels) c = channels;
+    Image im = make_image(src.w, src.h, c);
+    for (auto k = 0; k < c; ++k) { // k-->channel(c)
+        for (auto j = 0; j < src.h; ++j) { // j-->height(h)
+            for (auto i = 0; i < src.w; ++i) { // i-->width(w)
+                int cv_index = i + w * j + w * h * k;
+                int ogl_index = k + c * i + c * w * j;
+                im.data[ogl_index] = src.data[cv_index];
+            }
+        }
+    }
+    return im;
+}
+
 
 Image load_image_stb_resize(char *filename, int w, int h, int c)
 {

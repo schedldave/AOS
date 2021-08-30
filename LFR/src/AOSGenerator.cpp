@@ -69,8 +69,9 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 	std::ifstream poseStream(jsonPoseFile);
 	if ( poseStream.fail() )
 	{
+		char buffer[1024]; strerror_s(buffer, sizeof(buffer), errno);
 		std::cout << "Could not read " << jsonPoseFile << std::endl;
-		std::cout << "Error: " << strerror(errno) << std::endl;
+		std::cout << "Error: " << buffer << std::endl;
 	}
 	json j;
 	poseStream >> j; // parse json
@@ -88,10 +89,14 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			auto pose = m;
 
 			std::string name = fname;
-			if(replaceExt) name.replace(fname.find(".tiff"), strlen(".tiff"), ".png");
+			if(replaceExt) name.replace(fname.find(".tiff"), strlen(".tiff"), ".png"); // this is a hack: if images are png images but they are named *.tiff in the poses file!
 			Image img = load_image( (imgFilePath + "/" + name).c_str() );
-			if( !is_empty_image(img) )
-				aos->addView(img, pose, name);
+			if (!is_empty_image(img))
+			{
+				auto oglimg = prepare_image_ogl(img);
+				aos->addView(oglimg, pose, name);
+				free_image(oglimg);
+			}
 			free_image(img);
 
 			// DEBUG

@@ -23,7 +23,7 @@
 #include <iostream>
 #include <string>
 
-#include <CLI11/CLI11.hpp> // for argument parsing
+#include <CLI/CLI.hpp> // for argument parsing
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -35,8 +35,8 @@ void idxToBoolArray(const std::vector<unsigned int>& render_ids, std::vector<boo
 void fillIdx(std::vector<unsigned int>& render_ids, unsigned int array_size);
 
 // settings
-int SCR_WIDTH = 512;
-int SCR_HEIGHT = 512;
+int SCR_WIDTH = 1024;
+int SCR_HEIGHT = 1024;
 const char APP_NAME[] = "LFR";
 
 // camera
@@ -79,8 +79,9 @@ void showFPS(GLFWwindow *pWindow)
 		double fps = double(fpsNumberOfFrames) / fpsDelta;
 
 		std::stringstream ss;
-		ss << APP_NAME <<  " [" << fps << " FPS]";
-
+        int w,h;
+        glfwGetWindowSize(pWindow, &w, &h);
+		ss << APP_NAME <<  " [" << fps << " FPS; " << w << "x" << h << "]";
 		glfwSetWindowTitle(pWindow, ss.str().c_str());
 		fpsDelta = 0;
 		fpsNumberOfFrames = 0;
@@ -126,7 +127,7 @@ int main(int argc, char** argv)
 
 
 
-    int display_w = 1024, display_h = 1024;
+    int display_w = SCR_WIDTH, display_h = SCR_HEIGHT;
 
 
     InitWindowAndGUI(display_w, display_h, APP_NAME);

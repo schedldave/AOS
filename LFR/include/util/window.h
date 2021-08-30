@@ -3,9 +3,9 @@
 #define WINDOW_H
 
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include <glad/glad.h> // holds all OpenGL type declarations
 #define GLFW_INCLUDE_NONE
@@ -57,6 +57,7 @@ int InitWindow(const int width, const int height, const char *appname = "OpenGL"
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    //glfwWindowHint(GLFW_SCALE_TO_MONITOR, GL_TRUE);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -79,13 +80,13 @@ int InitWindow(const int width, const int height, const char *appname = "OpenGL"
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
+    /*if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
-    }
+    }*/
 
-    /*
+    
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -93,7 +94,7 @@ int InitWindow(const int width, const int height, const char *appname = "OpenGL"
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    */
+    
 
     return 0;
 }

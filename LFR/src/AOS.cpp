@@ -375,7 +375,7 @@ void AOS::initFrameBufferTexture(unsigned int* fbo, unsigned int* texture)
 	// position color buffer
 	glGenTextures(1, texture);
 	glBindTexture(GL_TEXTURE_2D, *texture);
-#ifdef GL_EXT_color_buffer_float
+#if defined(GL_EXT_color_buffer_float) || defined(GL_RGBA32F)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, render_width, render_height, 0, GL_RGBA, GL_FLOAT, NULL);
 #elif GL_EXT_color_buffer_half_float
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, render_width, render_height, 0, GL_RGBA, GL_FLOAT, NULL);
