@@ -38,6 +38,8 @@ python/build/temp.win*
 # VS & VS Code things
 .vs
 .vscode
+/VS/Debug/*
+/VS/Release/*
 
 # CMake stuff
 CMakeSettings.json
