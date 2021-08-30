@@ -43,3 +43,4 @@ img/raw/*
 LFR/vs/.vs/*
 LFR/vs/imgui.ini
 LFR/vs/benchmark.json
+LFR/VS/Debug/vc142.idb
