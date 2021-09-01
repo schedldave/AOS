@@ -34,6 +34,9 @@ python/pyaos.cpp
 python/__pycache__/minrunscript.cpython-37.pyc
 python/build/temp.*
 python/build/temp.win*
+*.dll
+*.pdb
+*.egg-info
 
 # VS & VS Code things
 .vs

@@ -93,9 +93,9 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			Image img = load_image( (imgFilePath + "/" + name).c_str() );
 			if (!is_empty_image(img))
 			{
-				auto oglimg = prepare_image_ogl(img);
-				aos->addView(oglimg, pose, name);
-				free_image(oglimg);
+				//auto oglimg = prepare_image_ogl(img);
+				aos->addView(img, pose, name);
+				//free_image(oglimg);
 			}
 			free_image(img);
 

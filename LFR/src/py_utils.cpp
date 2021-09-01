@@ -48,6 +48,8 @@ GLFWwindow* InitGlfwWindow(const int width, const int height, const char* appnam
     // tell GLFW to capture our mouse
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+
+#ifdef OPENGLES2
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
@@ -55,16 +57,16 @@ GLFWwindow* InitGlfwWindow(const int width, const int height, const char* appnam
         std::cout << "Failed to initialize GLAD" << std::endl;
         return nullptr;
     }
-
-    /*
+#else
+    
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
+        return nullptr;
     }
-    */
+#endif
 
     return window;
 }

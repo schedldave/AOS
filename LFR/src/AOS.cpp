@@ -352,7 +352,10 @@ void AOS::uploadOGLTexture(unsigned int textureID, Image img)
 		throw std::runtime_error( "Error: number of channels not supported!" );
 
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, internal, img.w, img.h, 0, format, GL_FLOAT, img.data);
+					
+	auto oglimg = prepare_image_ogl(img);
+	glTexImage2D(GL_TEXTURE_2D, 0, internal, img.w, img.h, 0, format, GL_FLOAT, oglimg.data);
+	free_image(oglimg);
 	//glGenerateMipmap(GL_TEXTURE_2D); // <- not supported in OpenGL ES!
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
@@ -363,7 +366,6 @@ void AOS::uploadOGLTexture(unsigned int textureID, Image img)
 
 void AOS::deleteOGLTexture(unsigned int texID)
 {
-	glActiveTexture(texID);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &texID);
 }
