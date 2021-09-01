@@ -1,68 +1,96 @@
-# AOS-LFR: A light-field renderer for airborne light fields.
 
-A light-field renderer for airborne light fields.
-You'll find more details in the [LFR folder](LFR)!
+# AOS/LFR: A Light-Field Renderer for Airborne Light Fields
 
-This repository contains updates and improvements for the LFR module of [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository. 
-Note that the original [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository contains several modules, whereas this repo just focuses on light-field rendering. 
-The algorithms are implemented with C++ and Python code.
+This is a C++ implementation of the Light-Field Renderer for Airborne Optical Sectioning. 
+It is based on OpenGL, uses [Dear ImGui](https://github.com/ocornut/imgui) and [GLFW](https://www.glfw.org/) for a basic user interface, and uses [Assimp](https://www.assimp.org/) to load a digital terrain.
 
-🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS)!
+## Changelog 🆕
 
-🆕 For a list of updates see the [changelog](LFR/README.md#changelog).
+- [x] Command line arguments and help with CLI11: you don't need to modify the main.cpp to load your own data.
+- [x] CMakefile for building with vcpkg (tested under Windows).
+- [x] Shaders are included as strings now. The 'shader' folder is not required anymore after compilation.
 
-## AOS: Airborne Optical Sectioning
+![alt text](../img/LFR.gif)
 
-Airborne Optical Sectioning (AOS) is a wide synthetic-aperture imaging technique that employs manned or unmanned aircraft, to sample images within large (synthetic aperture) areas from above occluded volumes, such as forests. Based on the poses of the aircraft during capturing, these images are computationally combined to integral images by light-field technology. These integral images suppress strong occlusion and reveal targets that remain hidden in single recordings.
+## [Python bindings](/LFR/python/)
+We provide Python bindings, which make it easy to use the renderer in Python projects. To compile them follow the steps described in [`/LFR/python/README`](./python/README.md).
 
-Single Images         |  Airborne Optical Sectioning
-:-------------------------:|:-------------------------:
-![single-images](./img/Nature_single-images.gif) | ![AOS](./img/Nature_aos.gif)
+## Install
+To compile the renderer with the GUI in native C++ follow the steps below:
+### vcpkg and CMake:
 
-> Source: [Video on YouTube](https://www.youtube.com/watch?v=kyKVQYG-j7U) | [FLIR](https://www.flir.com/discover/cores-components/researchers-develop-search-and-rescue-technology-that-sees-through-forest-with-thermal-imaging/)
- 
+Make sure that [vcpkg](https://github.com/microsoft/vcpkg) is installed and define an `VCPKG_ROOT` environment variable (it also works without the environment variable; just adjust the paths accordingly). 
+Install `assimp` and `glfw3` via vcpkg.
+To build the module, make [LFR](/LFR) the current directory and run the following Powershell commands:
+```pwsh
+mkdir build 
+cd build
+cmake .. "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+cmake --build . --config=Release
+cmake --install .
+cd ../bin
+```
+The `bin` folder now contains an executable application `main`.
 
-## Related-Publications
+### Linux Make: 
+Install [GLFW](https://www.glfw.org/) and compile [Assimp](https://www.assimp.org/) first. 
+To build, make [LFR](/LFR) the current directory and run `make `.
+After that, change the dir to `LFR/bin` and run `./main`. 
 
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Combined People Classification with Airborne Optical Sectioning, IEEE SENSORS JOURNAL (under review), (2021)
-  - [arXiv (pre-print)](https://arxiv.org/abs/2106.10077)  
-  - [Data: ](https://doi.org/10.5281/zenodo.5013640)[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5013640.svg)](https://doi.org/10.5281/zenodo.5013640)
-- David C. Schedl, Indrajit Kurmi, and Oliver Bimber, Autonomous Drones for Search and Rescue in Forests, Science Robotics 6(55), eabg1188, https://doi.org/10.1126/scirobotics.abg1188, (2021)
-  - [Science (final version)](https://robotics.sciencemag.org/content/6/55/eabg1188)
-  - [arXiv (pre-print)](https://arxiv.org/pdf/2105.04328)  
-  - [Data: ](https://doi.org/10.5281/zenodo.4349220) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4349220.svg)](https://doi.org/10.5281/zenodo.4349220)
-  - [Video on YouTube](https://www.youtube.com/watch?v=ebk7GQH5ltk)
-- David C. Schedl, Indrajit Kurmi, and Oliver Bimber, Search and rescue with airborne optical sectioning, Nature Machine Intelligence 2, 783-790, https://doi.org/10.1038/s42256-020-00261-3 (2020)
-  - [Nature (final version)](https://www.nature.com/articles/s42256-020-00261-3) | [(view only version)](https://rdcu.be/cbcf2) 
-  - [arXiv (pre-print)](https://arxiv.org/pdf/2009.08835.pdf)
-  - [Data: ](https://doi.org/10.5281/zenodo.3894773) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3894773.svg)](https://doi.org/10.5281/zenodo.3894773)
-  - [Video on YouTube](https://www.youtube.com/watch?v=kyKVQYG-j7U)
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Pose Error Reduction for Focus Enhancement in Thermal Synthetic Aperture Visualization, IEEE Geoscience and Remote Sensing Letters, DOI: https://doi.org/10.1109/LGRS.2021.3051718 (2021).
-  - [IEEE (final version)](https://ieeexplore.ieee.org/document/9340240) 
-  - [arXiv (pre-print)](https://arxiv.org/abs/2012.08606)
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Fast automatic visibility optimization for thermal synthetic aperture visualization, IEEE Geosci. Remote Sens. Lett. https://doi.org/10.1109/LGRS.2020.2987471 (2020).
-  - [IEEE (final version)](https://ieeexplore.ieee.org/document/9086501) 
-  - [arXiv (pre-print)](https://arxiv.org/abs/2005.04065)
-  - [Video on YouTube](https://www.youtube.com/watch?v=39GU1BOCfWQ&ab_channel=JKUInstituteofComputerGraphics)
-- David C. Schedl, Indrajit Kurmi, and Oliver Bimber, Airborne Optical Sectioning for Nesting Observation. Sci Rep 10, 7254, https://doi.org/10.1038/s41598-020-63317-9 (2020).
-  - [Nature (open access and final version)](https://www.nature.com/articles/s41598-020-63317-9) 
-  - [Video on YouTube](www.youtube.com/watch?v=81l-Y6rVznI)
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Thermal airborne optical sectioning. Remote Sensing. 11, 1668, https://doi.org/10.3390/rs11141668, (2019).
-  - [MDPI (open access and final version)](https://www.mdpi.com/2072-4292/11/14/1668) 
-  - [Video on YouTube](https://www.youtube.com/watch?v=_t2GEwA_tus&ab_channel=JKUCG)
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, A statistical view on synthetic aperture imaging for occlusion removal. IEEE Sensors J. 19, 9374 – 9383 (2019).
-  - [IEEE (final version)](https://ieeexplore.ieee.org/document/8736348)
-  - [arXiv (pre-print)](https://arxiv.org/abs/1906.06600) 
-- Oliver Bimber, Indrajit Kurmi, and David C. Schedl, Synthetic aperture imaging with drones. IEEE Computer Graphics and Applications. 39, 8 – 15 (2019).
-  - [IEEE (open access and final version)](https://doi.ieeecomputersociety.org/10.1109/MCG.2019.2896024) 
-- Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Airborne optical sectioning. Journal of Imaging. 4, 102 (2018).
-  - [MDPI (open access and final version)](https://www.mdpi.com/2313-433X/4/8/102)
-  - [Video on YouTube](https://www.youtube.com/watch?v=ELnvBfafnRA&ab_channel=JKUCG) 
+## Detailed usage and Parameters
 
-## Installation
- 
-For installation instructions refer to the [README in LFR](LFR/README.md).
+You can use `-h` or `--help` to get details about the command line options.
+```
+ ./main -h
+ > Options:
+ > -h,--help                   Print this help message and exit
+ > --fov FLOAT                 Field of view of the cameras in degrees.
+ > --dem TEXT                  The path to the digital elevation model (DEM).
+ > --pose TEXT                 The path to the poses in a json format.
+ > --img TEXT                  The path to the images in POSES.
+ > -r,--replaceTiff BOOLEAN    Replace .tiff with .png in the POSES file.
+ > -z,--ztranslDEM FLOAT       Translate the DEM on the z axis.
+ > -v,--view INT               view index for startup
+``` 
 
-## License
-* Code Modules: You are free to modify and use the software non-commercially; For commercial usage refer to the [original LICENSE](https://github.com/JKU-ICG/AOS/blob/stable_release/LICENSE.txt).
+Running `./bin/main` starts the application with the default parameters (i.e., the scene in `/AOS/data/F0`).
+
+
+For further details take a look at  the C++ code [`/LFR/src/main.cpp`](/LFR/src/main.cpp).
+
+## Dependencies
+Our software builds on the following code/libraries/tools from:
+- [Dear ImGui](https://github.com/ocornut/imgui) for the user interface
+- [GLFW](https://www.glfw.org/) for opengl window creation
+- [Assimp](https://www.assimp.org/) for digital terrain loading
+- [Glad](https://glad.dav1d.de/) for opengl loading
+- [learnopengl.com](https://learnopengl.com/) for handling shaders and meshes
+- [GLM](https://github.com/g-truc/glm) for matrix/vector calculations
+- [nlohmann/json](https://github.com/nlohmann/json) for reading and writing JSON files
+- [stb_image](https://github.com/nothings/stb) for reading images
+
+
+## ToDos/Wishlist
+
+Some of the features that will be nice to have or are on our agenda for implementation:
+
+- [ ] consider window size and aspect ratio for rendering (right now we use a default size e.g., 512x512 px)
+- [ ] support for masking / alpha channels (e.g., to remove FLIR/DJI watermarks or text)
+- [ ] render with RGB (3 channel) images. So far only grayscale has been tested.
+- [ ] show a wireframe of the digital elevation model
+- [ ] check if float32 ifdef is working on LINUX and older hardware
+- [ ] Image loading: stb_image does not support TIFF so consider switching to FreeImage, SDL, or OpenCV
+- [ ] Unittests in C++: https://cmake.org/cmake/help/latest/module/CTest.html  
+- [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648
+- [ ] Optimize min/max computation (used for displaying)
+- [ ] Heatmap visualization
+- [x] command line arguments: https://github.com/CLIUtils/CLI11#install 
+
+
+## Ideas / Low priority
+
+- [ ] OBJ loading: switch to a more lightweight loader (e.g., https://github.com/tinyobjloader/tinyobjloader) or keep Assimp
+- [ ] optionally display a satelite image on the ground
+
+
 
