@@ -1,17 +1,160 @@
-# AOS-LFR: A light-field renderer for airborne light fields.
+# AOS-LFR: A light-field renderer for airborne light fields. 
 
-A light-field renderer for airborne light fields.
-You'll find more details in the [LFR folder](LFR)!
+A light-field renderer for airborne light fields as used in the [Airborne Optical Sectioning](#publications) technique.
 
-This repository contains updates and improvements for the LFR module of [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository. 
+This repository contains updates and improvements for the LFR module of the [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository. 
 Note that the original [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository contains several modules, whereas this repo just focuses on light-field rendering. 
 The algorithms are implemented with C++ and Python code.
 
-🐛🐞 This repository also contains experimental features and thus might be buggy or broken. If you are looking for something stable, use [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS)!
+This repository also contains new and experimental features and thus might not work with the original implementation at [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS)! 
 
-🆕 For a list of updates see the [changelog](LFR/README.md#changelog).
+### Changelog | Recent Changes 
 
-## AOS: Airborne Optical Sectioning
+- [x] vcpkg based setup
+- [x] RGB image loading works
+- [x] Command line arguments and help with CLI11: you don't need to modify the main.cpp to load your own data.
+- [x] CMakefile for building with vcpkg (tested under Windows).
+- [x] Shaders are included as strings now. The 'shader' folder is not required anymore after compilation.
+
+### ToDos/Wishlist and Ideas for New Features
+
+<details><summary><b>CLICK ME</b> to see new features that are on our agenda</summary>
+
+- [ ] fallback to a simple plane if no DEM is loaded or DEM loading fails.
+- [ ] verify installation on Linux (and MacOS).
+- [ ] consider window size and aspect ratio for rendering (right now we use a default size e.g., 512x512 px)
+- [ ] support for masking / alpha channels (e.g., to remove FLIR/DJI watermarks, timestamps or any other text)
+- [ ] show a wireframe of the digital elevation model
+- [ ] check if float32 ifdef is working on LINUX and older hardware
+- [ ] Image loading: stb_image does not support TIFF so consider switching to SAIL, FreeImage, SDL, or OpenCV
+- [ ] Unittests in C++: https://cmake.org/cmake/help/latest/module/CTest.html  
+- [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648
+- [ ] Optimize min/max computation (used for displaying)
+- [ ] Heatmap visualization for grayscale images
+- [ ] OBJ loading: switch to a more lightweight loader with less dependencies (e.g., https://github.com/tinyobjloader/tinyobjloader) or keep Assimp
+- [ ] optionally display a satellite image on the ground
+</details>
+
+# Installation
+Building is based on the vcpkg package manager. Make sure that you have a compatible compiler installed (e.g. Visual Studio).
+
+## Requirements
+Then install [vcpkg](https://github.com/microsoft/vcpkg) and define an `VCPKG_ROOT` environment variable that points to your vcpkg installation. 
+Then install all necessary dependencies/libraries by running: 
+```pwsh
+vcpkg install cli11 nlohmann-json stb glm imgui[core,glfw-binding,opengl3-binding] glfw3 glad assimp --triplet x64-windows       
+```
+Note that you might need to change the `triplet` parameter if you are on a different system. 
+#### Dependencies
+<details><summary><b>CLICK ME</b> to see why the dependencies are needed</summary>
+
+- [Dear ImGui](https://github.com/ocornut/imgui) for the user interface
+- [GLFW](https://www.glfw.org/) for opengl window creation
+- [Assimp](https://www.assimp.org/) for digital terrain loading
+- [Glad](https://glad.dav1d.de/) for opengl loading
+- [learnopengl.com](https://learnopengl.com/) for handling shaders and meshes
+- [GLM](https://github.com/g-truc/glm) for matrix/vector calculations
+- [nlohmann/json](https://github.com/nlohmann/json) for reading and writing JSON files
+- [stb](https://github.com/nothings/stb) for reading/writing images
+- [CLI11](https://github.com/CLIUtils/CLI11) for parsing command line arguments
+</details>
+
+---
+## LFR Application (C++)
+To compile the renderer with the GUI in native C++ follow the steps below:
+### Compile using vcpkg and CMake:
+
+Make sure that you have a compiler, [vcpkg](https://github.com/microsoft/vcpkg) and the [required libraries](#installation) installed. 
+To build the module, make [LFR](/LFR) the current directory and run the following Powershell commands:
+```pwsh
+mkdir build 
+cd build
+cmake .. "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+cmake --build . --config=Release
+cmake --install .
+cd ../bin
+```
+The `bin` folder now contains an executable application `LFR`.
+Running `./bin/LFR` starts the application with some default parameters (i.e., the example scene in `data`).
+
+### Compile using Visual Studio
+
+Integrate vcpkg into Visual Studio with:
+```pwsh
+vcpkg integrate install
+```
+All installed libraries should now be discoverable by IntelliSense and usable in code without additional configuration.
+Just open the project or solution file in the `VS` folder and compile the `LFR` application.
+
+### Detailed Usage and Parameters
+
+You can use `-h` or `--help` to get details about the command line options.
+```
+ ./main -h
+ > Options:
+ > -h,--help                   Print this help message and exit
+ > --fov FLOAT                 Field of view of the cameras in degrees.
+ > --dem TEXT                  The path to the digital elevation model (DEM).
+ > --pose TEXT                 The path to the poses in a json format.
+ > --img TEXT                  The path to the images in POSES.
+ > -r,--replaceTiff BOOLEAN    Replace .tiff with .png in the POSES file.
+ > -z,--ztranslDEM FLOAT       Translate the DEM on the z axis.
+ > -v,--view INT               view index for startup
+``` 
+
+For further details take a look at  the C++ code [`src/main.cpp`](./src/main.cpp).
+
+
+---
+## Python Bindings 
+
+The python wrapper renders images in the `numpy` format that is also used by OpenCV. 
+The build process is based on Phyton's setuptools and uses Cython. Make sure that vcpkg and [the C++ dependencies](#requirements), and the [Python dependencies](pyaos/requirements.txt) are installed.
+
+### Install using PIP
+
+To compile the Python bindings change to the root directory and run the following command:
+```pwsh
+pip install .
+```
+This has been tested on Windows and needs verification on Linux. 
+Make sure that you close Visual Studio before running `pip install`.
+
+
+
+### Quick tutorial
+```py
+import pyaos.lfr as LFR
+r,w,fovDegrees = 512,512,50 # resolution and field of view
+
+# initialize an OpenGL context and window
+window = LFR.PyGlfwWindow( r, w, 'AOS' ) 
+
+# init the light-field renderer
+aos = LFR.PyAOS( r, w, fovDegrees )
+# upload a digital terrain in an OBJ format
+aos.loadDEM( "../data/plane.obj" )
+
+# add (mutiple) single images (single image, pose, name)
+aos.addView( img, pose, "01" )
+# ...
+
+# compute integral images at a virtual position
+rimg = aos.render( vpose, fovDegrees )
+```
+
+### Detailed Usage
+
+Please take a look at [`/pyaos/sample.py`](./pyaos/sample.py) file in the repository for a complex example.
+
+The `./pyaos/LFR_utils.py` file provides additional auxiliary functions for initializing the light-field renderer, uploading poses and images, and for modifying poses (e.g., to virtual camera positions needed for integration).
+
+`./pyaos/pyaos_test.py` is a unit test written in Python's `unittest` framework. To verify that the code compiled correctly, just run the unit test. Make sure that the working directory is set to `./pyaos/` so that the data is loaded correctly.
+
+
+
+---
+# AOS: Airborne Optical Sectioning
 
 Airborne Optical Sectioning (AOS) is a wide synthetic-aperture imaging technique that employs manned or unmanned aircraft, to sample images within large (synthetic aperture) areas from above occluded volumes, such as forests. Based on the poses of the aircraft during capturing, these images are computationally combined to integral images by light-field technology. These integral images suppress strong occlusion and reveal targets that remain hidden in single recordings.
 
@@ -20,9 +163,12 @@ Single Images         |  Airborne Optical Sectioning
 ![single-images](./img/Nature_single-images.gif) | ![AOS](./img/Nature_aos.gif)
 
 > Source: [Video on YouTube](https://www.youtube.com/watch?v=kyKVQYG-j7U) | [FLIR](https://www.flir.com/discover/cores-components/researchers-develop-search-and-rescue-technology-that-sees-through-forest-with-thermal-imaging/)
- 
 
-## Related-Publications
+## Publications
+- David C. Schedl, Indrajit Kurmi, and Oliver Bimber, *Autonomous Drones for Search and Rescue in Forests*, Science Robotics, (2021)
+- David C. Schedl, Indrajit Kurmi, and Oliver Bimber, *Search and rescue with airborne optical sectioning*, Nature Machine Intelligence, (2020)
+- ...
+<details><summary><b>CLICK ME</b> to see full details and more publications</summary>
 
 - Indrajit Kurmi, David C. Schedl, and Oliver Bimber, Combined People Classification with Airborne Optical Sectioning, IEEE SENSORS JOURNAL (under review), (2021)
   - [arXiv (pre-print)](https://arxiv.org/abs/2106.10077)  
@@ -59,10 +205,4 @@ Single Images         |  Airborne Optical Sectioning
   - [MDPI (open access and final version)](https://www.mdpi.com/2313-433X/4/8/102)
   - [Video on YouTube](https://www.youtube.com/watch?v=ELnvBfafnRA&ab_channel=JKUCG) 
 
-## Installation
- 
-For installation instructions refer to the [README in LFR](LFR/README.md).
-
-## License
-* Code Modules: You are free to modify and use the software non-commercially; For commercial usage refer to the [original LICENSE](https://github.com/JKU-ICG/AOS/blob/stable_release/LICENSE.txt).
-
+</details>

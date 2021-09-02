@@ -1,5 +1,0 @@
-PyGML
-opencv-python
-numpy
-cython
-glm
