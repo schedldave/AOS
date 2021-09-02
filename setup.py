@@ -11,6 +11,10 @@ import struct
 import glob
 import sys
 import shutil
+# read the contents of your README file
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text() # see: https://packaging.python.org/guides/making-a-pypi-friendly-readme/
 
 arch = 'x86'
 if struct.calcsize("P")*8 == 64:
@@ -29,10 +33,6 @@ libraries = []
 for lb in thirdpartylibs:
     libraries.extend([os.path.splitext(os.path.split(lib)[1])[0] for lib in (glob.glob( os.path.join(vcpkg_installed, "lib",  f'*{lb}*') ))])
 
-
-#ext = Extension('glesLFR', sources=["glesLFRPyth.pyx","src\glesLFR.cpp","src\LFGenerator.cpp","src\stb_image.cpp","src\glad.c"], language="c++",)
-
-#setup(name="glesLFR", ext_modules = cythonize([ext]),cmdclass = {'build_ext': build_ext})
 ext_modules = [
     Extension("pyaos.lfr", 
         sources=["pyaos/pyaos.pyx","src/AOS.cpp","src/image.cpp","src/utils.cpp","src/gl_utils.cpp"],
@@ -40,9 +40,7 @@ ext_modules = [
         include_dirs=[numpy.get_include(), "include", os.path.join(vcpkg_installed, "include")],
         library_dirs=[ os.path.join(vcpkg_installed, "lib")],
         language="c++",
-        #extra_compile_args=["-MT"], #<--for static
-        #extra_compile_args=["-ggdb", "-lpthread","/INCLUDE:../include/","/link","/LIBPATH:../lib/", "-llibassimp.so","-Wall"]
-)
+    )
 ]
 
 def copy_dlls():
@@ -64,12 +62,10 @@ setup(
     name = "pyaos",
     ext_modules = ext_modules,
     version='0.1.0',
-    #include_dirs=[numpy.get_include(), "include", os.path.join(vcpkg_installed, "include")],
-    #ext_modules = cythonize([ext_modules]),
     cmdclass = { 'build_ext': build_ext },
-    #include_dirs=[numpy.get_include(),"../include"]
     package_data=package_data, # copy the DLLs in vcpkg/installed/.../bin e.g. assimp*.dll
-    #script_args = ["build_ext", "--inplace"],
-    packages=find_packages(include=['pyaos', 'pyaos.*'])
+    packages=find_packages(include=['pyaos', 'pyaos.*']),
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 )          
 
