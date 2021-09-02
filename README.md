@@ -61,7 +61,7 @@ Note that you might need to change the `triplet` parameter if you are on a diffe
 
 ---
 ## LFR Application (C++)
-To compile the renderer with the GUI in native C++ follow the steps below:
+To compile the renderer with the GUI in native C++ clone this repository and follow the steps below:
 ### Compile using vcpkg and CMake:
 
 Make sure that you have a compiler, [vcpkg](https://github.com/microsoft/vcpkg) and the [required libraries](#installation) installed. 
@@ -111,9 +111,17 @@ For further details take a look at  the C++ code [`src/main.cpp`](./src/main.cpp
 The python wrapper renders images in the `numpy` format that is also used by OpenCV. 
 The build process is based on Phyton's setuptools and uses Cython. Make sure that vcpkg and [the C++ dependencies](#requirements), and the [Python dependencies](pyaos/requirements.txt) are installed.
 
+Note that a GLFW3 window with an OpenGL context opens in the background every time the module runs. Therefore, this will most likely not work on headless systems (without monitors).
+
 ### Install using PIP
 
-To compile the Python bindings change to the root directory and run the following command:
+To install the python bindings as python package directly from Github run:
+```pwsh
+pip install git+https://github.com/schedldave/AOS
+```
+
+
+Optionally compile the Python bindings by cloning this repository and running the following command in the root folder:
 ```pwsh
 pip install .
 ```
@@ -154,7 +162,7 @@ The `./pyaos/LFR_utils.py` file provides additional auxiliary functions for init
 
 
 ---
-# AOS: Airborne Optical Sectioning
+# Details about Airborne Optical Sectioning
 
 Airborne Optical Sectioning (AOS) is a wide synthetic-aperture imaging technique that employs manned or unmanned aircraft, to sample images within large (synthetic aperture) areas from above occluded volumes, such as forests. Based on the poses of the aircraft during capturing, these images are computationally combined to integral images by light-field technology. These integral images suppress strong occlusion and reveal targets that remain hidden in single recordings.
 
