@@ -99,11 +99,18 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			}
 			free_image(img);
 
+#ifdef DEBUG_OUTPUT
 			// DEBUG
-			// std::cout << "imgfilename: " << jimg[i]["imagefile"] << std::endl;
-			// std::cout << "matrix: " << jimg[i]["M3x4"] << std::endl;
-			// auto translation = glm::vec3(glm::inverse(m)[3]);
-			// std::cout << "translation: " << translation.x << ", " << translation.y << ", " << translation.z << "\n";
+			std::cout << "---------------------------------" << std::endl;
+			std::cout << ">> AOSGenerator::Generate << " << std::endl;
+			std::cout << "imgfilename: " << jimg[i]["imagefile"] << std::endl;
+			std::cout << "JSON-matrix: " << jimg[i]["M3x4"] << std::endl;
+			//std::cout << "matrix(parsed): " << glm::to_string(pose) << std::endl;
+			auto translation = glm::vec3(glm::inverse(m)[3]);
+			std::cout << "position: " << glm::to_string(translation) << "\n";
+			std::cout << "pose-matrix: " << glm::to_string(aos->getPose(aos->getViews() - 1)) << std::endl;
+			std::cout << "---------------------------------" << std::endl;
+#endif
 		}
 
 	}

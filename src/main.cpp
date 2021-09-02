@@ -341,7 +341,9 @@ int main(int argc, char** argv)
 
         // LFR Render
         // ----------
-        lf->renderForward(camera.GetViewMatrix(), camera.Zoom, render_ids);
+        //lf->renderForward(camera.GetViewMatrix(), camera.Zoom, render_ids); // forward rendering
+
+        lf->render(camera.GetViewMatrix(), camera.Zoom, render_ids); // deferred rendering
 
         // ----- render results
         int display_w, display_h;

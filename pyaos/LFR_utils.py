@@ -6,35 +6,19 @@ from PIL import Image # needed to load hdr images
 import math
 import os
 from pathlib import Path 
-import glm
+import glm # PyGLM
 import sys
+import pyaos.lfr as LFR
 
 
-def init_window( aos_python_path = Path(__file__).resolve().parent ):
-    
-    sys.path.insert(1,aos_python_path )
-    import pyaos
-    
-    window = pyaos.PyGlfwWindow(512,512,'AOS') # make sure there is an OpenGL context
+def init_window( ):
+       
+    window = LFR.PyGlfwWindow(512,512,'AOS') # make sure there is an OpenGL context
     return window
 
-def init_aos(fov = 50.815436217896945, aos_python_path = Path(__file__).resolve().parent ):
-    
-    try:
-        import pyaos
-    except:
-        sys.path.insert(1,aos_python_path )
-        import pyaos
-
-    
-
-    wd = os.getcwd()
-    os.chdir(aos_python_path) # change to AOS working dir for startup (this is required so that the program finds dlls and the shader)
-    
-    aos = pyaos.PyAOS(512,512,fov)
-
-    os.chdir(wd)
-
+def init_aos( w=512, h=512, fov = 50.815436217896945 ) -> LFR:
+   
+    aos = LFR.PyAOS(w,h,fov)
     return aos
 
 def rotate_vec(vec, radians, rotate_around):
@@ -55,14 +39,28 @@ def position_from_pose( pose ):
 
 def pose_to_virtualcamera( vpose ):
     # return glm.inverse(vpose.copy()) # <-- why this is not working?
-    Posvec = glm.vec3(glm.inverse(vpose)[3])
-    Upvec = glm.vec3(glm.inverse(vpose)[1])
-    FrontVec = glm.vec3(glm.inverse(vpose)[2])
-    return np.array(glm.lookAt(Posvec, Posvec + FrontVec, Upvec))
+    #print('vpose: ')
+    #print(vpose)
+    vp = glm.mat4(*np.array(vpose).transpose().flatten())
+    #print(vp)
+    ivp = glm.inverse(glm.transpose(vp))
+    Posvec = glm.vec3(ivp[3])
+    Upvec = glm.vec3(ivp[1])
+    FrontVec = glm.vec3(ivp[2])
+    #print('position: ')
+    #print(Posvec)
+    #print('up: ')
+    #print(Upvec)
+    #print('forward: ')
+    #print(FrontVec)
+    lookAt = glm.lookAt(Posvec, Posvec + FrontVec, Upvec)
+    #print('lookAt: ')
+    #print(lookAt)
+    return np.asarray(glm.transpose(lookAt))
 
 
 
-def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=None,adjust_mean=True):
+def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=None,adjust_mean=False):
     """ read images and poses from the json file and the image directory
 
     """
@@ -80,9 +78,9 @@ def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=No
                 LoadImageName = LoadImageName.replace('.tiff',replace_ext)
             #PILImage = Image.open(os.path.join(ImageLocation,LoadImageName))
             CopiedImage = cv2.imread( os.path.join(ImageLocation,LoadImageName), -1 ) # np.array(PILImage)
-            if len(CopiedImage.shape) > 2 :    # convert to grayscale
-                CopiedImage = cv2.cvtColor(CopiedImage, cv2.COLOR_BGR2GRAY)
-            FloatImage = CopiedImage.astype(np.float32)
+            #if len(CopiedImage.shape) > 2 :    # convert to grayscale
+            #    CopiedImage = cv2.cvtColor(CopiedImage, cv2.COLOR_BGR2GRAY)
+            FloatImage = CopiedImage.astype(np.float32) #/255.0
             img_list.append(FloatImage)
 
 

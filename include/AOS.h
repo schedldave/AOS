@@ -1,6 +1,8 @@
 #ifndef AOS_H
 #define AOS_H
 
+//#define DEBUG_OUTPUT true // <-- enable for debugging!
+
 #include "image.h"
 #include <glm/glm.hpp>
 #include <string>

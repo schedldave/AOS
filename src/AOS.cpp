@@ -86,6 +86,15 @@ AOS::AOS(unsigned int width, unsigned int height, float fovDegree, int prealloca
 	CHECK_GL_ERROR
 
 	glViewport(0, 0, render_width, render_height);
+
+#ifdef DEBUG_OUTPUT
+	// DEBUG
+	std::cout << "---------------------------------------" << std::endl;
+	std::cout << ">> AOS::AOS << " << std::endl;
+	std::cout << "fov(in degrees): " << fovDegree << " render size: " << render_width << ", " << render_height << std::endl;
+	std::cout << "---------------------------------------" << std::endl;
+
+#endif
 }
 
 Image AOS::render(const glm::mat4 virtual_pose, const float virtualFovDegrees, const std::vector<unsigned int> ids)
@@ -140,8 +149,6 @@ Image AOS::render(const glm::mat4 virtual_pose, const float virtualFovDegrees, c
 
 	//std::cout << "RENDER: projected " << counter << " images " << std::endl;
 
-
-
 	// read framebuffer to CPU
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, render_width, render_height, GL_RGBA, GL_FLOAT, fboImg.data);
@@ -153,8 +160,16 @@ Image AOS::render(const glm::mat4 virtual_pose, const float virtualFovDegrees, c
 	//std::cout << "fbo_min: " << glm::to_string(fboMin).c_str() << std::endl;
 	//std::cout << "fbo_max: " << glm::to_string(fboMax).c_str() << std::endl;
 
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // disable framebuffer
+
+#ifdef DEBUG_OUTPUT
+	// DEBUG
+	std::cout << "---------------------------------------" << std::endl;
+	std::cout << ">> AOS::render << " << std::endl;
+	std::cout << "fov(in degrees): " << virtualFovDegrees << ", virtual view: " << glm::to_string(virtual_pose) << ",  # single images: " << _ids.size() << std::endl;
+	std::cout << "---------------------------------------" << std::endl;
+
+#endif
 
 
 	return fboImg;
@@ -266,6 +281,22 @@ void AOS::addView(Image img, glm::mat4 pose, std::string name)
 	//save_image_png(img, "Image"); //for checking if image is loaded
 	view.ogl_id = generateOGLTexture(img);
 	ogl_imgs.push_back(view);
+#ifdef DEBUG_OUTPUT
+	// DEBUG
+	auto w = img.w-1;
+	auto h = img.h-1;
+	std::cout << ">> AOS::addView << " << std::endl;
+	std::cout << "pose: " << glm::to_string(pose) << " name: " << name << " size: " << img.w << "x" << img.h << "x" << img.c << std::endl;
+	std::cout << "image-pixels: [0,0]/[w,0]/[0,h]/[w,h]: (" << get_pixel(img, 0, 0, 0);
+	if (img.c >= 3) std::cout << "," << get_pixel(img, 0, 0, 1), std::cout << "," << get_pixel(img, 0, 0, 2);
+	std::cout << "), (" << get_pixel(img, w, 0, 0);
+	if (img.c >= 3) std::cout << "," << get_pixel(img, w, 0, 1), std::cout << "," << get_pixel(img, w, 0, 2);
+	std::cout << "), (" << get_pixel(img, 0, h, 0);
+	if (img.c >= 3) std::cout << "," << get_pixel(img, 0, h, 1), std::cout << "," << get_pixel(img, 0, h, 2);
+	std::cout << "), (" << get_pixel(img, w, h, 0);
+	if (img.c >= 3) std::cout << "," << get_pixel(img, w, h, 1), std::cout << "," << get_pixel(img, w, h, 2);
+	std::cout << ")" << std::endl;
+#endif
 }
 
 void AOS::removeView(unsigned int idx)

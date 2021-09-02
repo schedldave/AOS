@@ -2,18 +2,18 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\r1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\r1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\r1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\r1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json"</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

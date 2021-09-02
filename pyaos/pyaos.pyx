@@ -196,7 +196,7 @@ cdef class PyAOS: # defines a python wrapper to the C++ class
         """
         cdef vector[unsigned int] ids = np.asarray(cameraids, dtype = np.uintc, order="C")
 
-        cdef mat4 pyvirtualPose =  make_mat4_from_float(virtualcamerapose.astype(np.float32).tobytes())
+        cdef mat4 pyvirtualPose =  make_mat4_from_float(np.asarray(virtualcamerapose).astype(np.float32).tobytes())
         img = self.thisptr.render(pyvirtualPose, virtualcamerafieldofview, ids)
         #cdef np.ndarray[float, ndim=3, mode='c'] floatarr
         #floatarr = np.zeros((self.LFRResolutionHeight,self.LFRResolutionWidth,4), dtype=np.float32)
