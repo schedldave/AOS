@@ -20,6 +20,7 @@ This repository also contains new and experimental features and thus might not w
 
 <details><summary><b>CLICK ME</b> to see new features that are on our agenda</summary>
 
+- [ ] use gladUnload to recover if window has closed in python: https://github.com/Dav1dde/glad
 - [ ] fallback to a simple plane if no DEM is loaded or DEM loading fails.
 - [ ] verify installation on Linux (and MacOS).
 - [ ] consider window size and aspect ratio for rendering (right now we use a default size e.g., 512x512 px)
