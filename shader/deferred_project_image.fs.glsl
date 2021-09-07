@@ -27,8 +27,9 @@ vec4 ProjectImage(vec4 fragPosLightSpace)
 	if (projCoords.x>=0.0f && projCoords.x <= 1.0f && projCoords.y >= 0.0f && projCoords.y <= 1.0f)
 	{
 		// the images need to be flipped!
-		return vec4(texture(imageTexture, vec2(1.0f-projCoords.x,1.0f-projCoords.y)).rgb, 1.0f);
-		//return vec4( vec3( 1.0f / 400.0f, 1.0f, 0.5f ), 1.0f );
+		vec4 rgba = vec4(texture(imageTexture, vec2(1.0f-projCoords.x,1.0f-projCoords.y)).rgba);
+		float alpha = rgba.a;
+		return vec4( rgba.rgb, 1.0f ) * alpha; // premultiplied
 	}
 	else
 	{

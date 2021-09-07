@@ -96,6 +96,7 @@ int main(int argc, char** argv)
     float fovDegree = 43.10803984095769F; // degrees
     std::string posesFile = "../data/F0/poses/poses_first30.json";
     std::string imgFolder = "../data/F0/images_ldr/";
+    std::string maskImage = "";
     float demTranslationZ = 0.0f;
     bool tmp_replaceTiff = false;
 
@@ -108,6 +109,7 @@ int main(int argc, char** argv)
     app.add_option("-r,--replaceTiff",  tmp_replaceTiff, "Replace .tiff with .png in the POSES file.");
     app.add_option("-z,--ztranslDEM",  demTranslationZ, "Translate the DEM on the z axis.");
     app.add_option("-v,--view",  currView, "view index for startup");
+    app.add_option("--mask", maskImage, "The path to the alpha mask image.");
     CLI11_PARSE(app, argc, argv);
 
     bool replaceTiff = tmp_replaceTiff || (0==imgFolder.compare("../data/F0/images_ldr/")); // this makes sure that replaceTiff is true with the F0 ldr scene
@@ -118,6 +120,8 @@ int main(int argc, char** argv)
     std::cout << "  digital elevation model file: " << demFile << " " << std::endl;
     std::cout << "  pose file: " << posesFile << " " << std::endl;
     std::cout << "  image folder: " << imgFolder << " " << std::endl;
+    if(maskImage.size()>0) 
+        std::cout << "  mask image: " << maskImage << " " << std::endl;
     std::cout << "  replace tiff: " << (replaceTiff ? "yes" : "no") << " " << std::endl;
     std::cout << "  z translation of the DEM: " << demTranslationZ << " " << std::endl;
     std::cout << "  startup view: " << currView << " " << std::endl;
@@ -166,7 +170,7 @@ int main(int argc, char** argv)
 	// load the light field (matrices, textures, names ...)
 	// -----------------------
 	AOSGenerator generator;
-    generator.Generate(lf, posesFile, imgFolder, replaceTiff);
+    generator.Generate(lf, posesFile, imgFolder, maskImage, replaceTiff);
 	CHECK_GL_ERROR
     std::cout << "LF with " << lf->getViews() << " views loaded!" << std::endl;
 
@@ -351,7 +355,7 @@ int main(int argc, char** argv)
         glViewport(0, 0, display_w, display_h);
         glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        lf->display();
+        lf->display(false);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -369,7 +373,7 @@ int main(int argc, char** argv)
     // ------------------------------------------------------------------------
     // -------------------------------------------------------------------------------
 
-    glfwTerminate();
+    DestroyWindow();
     return 0;
 }
 

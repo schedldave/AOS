@@ -321,6 +321,35 @@ void embed_image(Image source, Image dest, int dx, int dy)
     }
 }
 
+Image merge_images_channels(Image* ims, int n)
+{
+    int color = 1;
+    int border = 1;
+    int h, w, c;
+    w = ims[0].w;
+    h = ims[0].h;
+    c = 0; // ims[0].c;
+    for(auto i = 0; i < n; ++i) {
+        c += ims[i].c;
+    }
+
+    Image merged = make_image(w, h, c);
+    int i, k, x, y, m = 0;
+    for (i = 0; i < n; ++i) {
+        for (k = 0; k < ims[i].c; ++k) {
+            for (y = 0; y < h; ++y) {
+                for (x = 0; x < w; ++x) {
+                    float val = get_pixel(ims[i], x, y, k);
+                    set_pixel(merged, x, y, m, val);
+                }
+            }
+            ++m;
+        }
+    }
+    return merged;
+}
+
+
 Image collapse_image_layers(Image source, int border)
 {
     int h = source.h;
@@ -516,6 +545,19 @@ Image make_image(int w, int h, int c)
     out.data = (float*)xcalloc(h * w * c, sizeof(float));
     return out;
 }
+
+Image make_uniform_image(int w, int h, int c, float val)
+{
+    Image out = make_empty_image(w, h, c);
+    out.data = (float*)xcalloc(h * w * c, sizeof(float));
+    int i;
+    for (i = 0; i < w * h * c; ++i) {
+        out.data[i] = val;
+    }
+    return out;
+}
+
+
 
 Image make_random_image(int w, int h, int c)
 {
