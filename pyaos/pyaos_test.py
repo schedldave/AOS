@@ -35,10 +35,16 @@ class TestAOSRenderTwice(unittest.TestCase):
         self._window = None
 
     def test_render_twice(self):
+        self.alpha_mask(self._aos1)
         self.color_image(self._aos1)
         self.render_single_image(self._aos1)
         self.render_single_image(self._aos2)
         self.matrices_tests()
+
+    # WARNING: this breaks. I guess it is related to how OpenGL is initialized. 
+    #def test_render_again(self):
+    #    self.color_image(self._aos1)
+
 
     def render_single_image(self, _aos):
 
@@ -108,7 +114,7 @@ class TestAOSRenderTwice(unittest.TestCase):
         _aos.setDEMTransform( [0,0,ztransl] )
         _aos.render(pose, self._fovDegrees, [1])
         xyz = _aos.getXYZ()
-        print(xyz)
+        #print(xyz)
         self.assertTrue(np.isclose(xyz[:,:,2],ztransl).all())
 
         # translate the DEM down 
@@ -116,7 +122,7 @@ class TestAOSRenderTwice(unittest.TestCase):
         _aos.setDEMTransform( [0,0,ztransl] )
         _aos.render(pose, self._fovDegrees, [1])
         xyz = _aos.getXYZ()
-        print(xyz)
+        #print(xyz)
         #print(xyz[:,:,2])
         self.assertTrue(np.isclose(xyz[:,:,2],ztransl).all())
 
@@ -146,6 +152,42 @@ class TestAOSRenderTwice(unittest.TestCase):
         
         _aos.clearViews()
         self.assertTrue(_aos.getSize()==0)
+
+    def alpha_mask(self,_aos):
+        #_aos = self._aos1
+        
+        # color image with three channels
+        img = np.ones(shape=(512,512,4), dtype = np.float32)
+        
+        for alpha in [0, .1, .5, .789123, 1.0, 2.0]:
+        
+            img[:,:,0] = 0.1
+            img[:,:,1] = 1.0
+            img[:,:,2] = 3.0
+            img[:,:,3] = alpha
+            pose = np.eye(4)
+
+                    # adding a view
+            self.assertTrue(_aos.getSize()==0)
+            _aos.addView( img, pose, "c01" )
+            self.assertTrue(_aos.getSize()==1)
+
+            ztransl = -100
+            _aos.setDEMTransform( [0,0,ztransl] )
+            rimg = _aos.render(pose, self._fovDegrees)
+
+            # check that the rendered image is like the initial one
+            #print("python image: ")
+            #print( img )
+            #print("LFR image: ")
+            #print( rimg )
+            #print(alpha)
+            self.assertTrue(np.allclose(img[:,:,:3]*alpha,rimg[:,:,:3],atol=1.e-3))
+
+
+            # cleanup for next test:
+            _aos.clearViews()
+            self.assertTrue(_aos.getSize()==0)
 
 
     def color_image(self,_aos):
@@ -239,7 +281,7 @@ class TestAOSRenderTwice(unittest.TestCase):
         self.assertTrue(np.allclose(forward,[0.091,0.065,0.994],atol=1.e-3)) # check pos, front and up!
 
         lA = glm.lookAt(pos, pos+forward, up)
-        print(lA)
+        #print(lA)
         
         # numpy interatcion
         npose = np.array(rpose)

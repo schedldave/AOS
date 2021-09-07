@@ -38,29 +38,17 @@ def position_from_pose( pose ):
     return glm.vec3(glm.inverse(pose)[3])
 
 def pose_to_virtualcamera( vpose ):
-    # return glm.inverse(vpose.copy()) # <-- why this is not working?
-    #print('vpose: ')
-    #print(vpose)
     vp = glm.mat4(*np.array(vpose).transpose().flatten())
-    #print(vp)
     ivp = glm.inverse(glm.transpose(vp))
     Posvec = glm.vec3(ivp[3])
     Upvec = glm.vec3(ivp[1])
     FrontVec = glm.vec3(ivp[2])
-    #print('position: ')
-    #print(Posvec)
-    #print('up: ')
-    #print(Upvec)
-    #print('forward: ')
-    #print(FrontVec)
     lookAt = glm.lookAt(Posvec, Posvec + FrontVec, Upvec)
-    #print('lookAt: ')
-    #print(lookAt)
     return np.asarray(glm.transpose(lookAt))
 
 
 
-def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=None,adjust_mean=False):
+def read_poses_and_images(aos,PosesFilePath,ImageLocation,mask=None, ud=None,replace_ext=None,adjust_mean=False):
     """ read images and poses from the json file and the image directory
 
     """
@@ -70,6 +58,19 @@ def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=No
         PoseFileImagesData = PoseFileData['images']
         HalfValue = int(round(len(PoseFileData['images'])/2))
 
+        if isinstance(mask,str):
+            mask = cv2.imread(mask)[:,:,0]
+
+        if mask is not None: 
+            assert isinstance(mask, (np.ndarray, np.generic) )
+            assert len(mask.shape)==2 or mask.shape[2] == 1 # single channel image
+            if mask.dtype == np.uint8:
+                mask = mask.astype(np.float32) / 255.0
+            elif mask.dtype == np.uint16:
+                mask = mask.astype(np.float32) / 2**16
+            #print(f'mask dtype {mask.dtype}, shape: {mask.shape}')
+            #assert isinstance( mask, np.floating )
+
         # read images first and put them in img_list
         img_list = []
         for i in range(0,NoofPoses): 
@@ -78,9 +79,15 @@ def read_poses_and_images(aos,PosesFilePath,ImageLocation,ud=None,replace_ext=No
                 LoadImageName = LoadImageName.replace('.tiff',replace_ext)
             #PILImage = Image.open(os.path.join(ImageLocation,LoadImageName))
             CopiedImage = cv2.imread( os.path.join(ImageLocation,LoadImageName), -1 ) # np.array(PILImage)
-            #if len(CopiedImage.shape) > 2 :    # convert to grayscale
-            #    CopiedImage = cv2.cvtColor(CopiedImage, cv2.COLOR_BGR2GRAY)
             FloatImage = CopiedImage.astype(np.float32) #/255.0
+
+            if mask is not None:
+                channels = 1 if len(FloatImage.shape)==2 else FloatImage.shape[2]
+                rgb = np.zeros((*FloatImage.shape[:2],3))
+                rgb[:,:,:channels] = FloatImage
+                rgba = np.stack((rgb[:,:,0],rgb[:,:,1],rgb[:,:,2],mask),axis=-1)
+                FloatImage = rgba
+
             img_list.append(FloatImage)
 
 
