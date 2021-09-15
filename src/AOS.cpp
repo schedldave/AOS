@@ -270,7 +270,7 @@ void AOS::setPoseCorrection( const unsigned int index,const glm::vec3 translatio
 }
 
 
-void AOS::addView(Image img, glm::mat4 pose, std::string name)
+void AOS::addView(Image img, glm::mat4 pose, std::string name, ViewData data)
 {
 	View view;
 	view.corr = glm::mat4(1); // identity
@@ -280,6 +280,7 @@ void AOS::addView(Image img, glm::mat4 pose, std::string name)
 	//std::cout << "Image Value Loaded " << pixelvalue << " image properties "<< img.h << img.w << img.c <<std::endl;
 	//save_image_png(img, "Image"); //for checking if image is loaded
 	view.ogl_id = generateOGLTexture(img);
+	view.data = data;
 	ogl_imgs.push_back(view);
 #ifdef DEBUG_OUTPUT
 	// DEBUG

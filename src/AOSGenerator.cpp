@@ -79,6 +79,19 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 
 	Image alpha = make_empty_image();
 
+	// for video
+	auto readVideo = false;
+	if (j.contains(std::string{ "cameras" }))
+	{
+		this->hasVideoData = true;
+		for (auto cam : j["cameras"].items())
+		{
+			cameraNames.push_back(cam.key());
+			assert(cameraNames.size() == cam.value() + 1); // make sure the id in the vector matches the id used in the images!!!
+		}
+			
+	}
+
 
 	//std::cout << "images size: " << j["images"].size() << std::endl;
 	if (j["images"].size() > 0)
@@ -91,8 +104,18 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			std::string fname = (jimg[i]["imagefile"]);
 			auto pose = m;
 
+			ViewData data;
+			if (this->isVideoDataAvailable())
+			{
+				int cam_id = jimg[i]["cam_id"];
+				float time = jimg[i]["time"];
+				data = { {"cam_id", cam_id}, {"time", time} };
+			}
+
 			std::string name = fname;
-			if(replaceExt) name.replace(fname.find(".tiff"), strlen(".tiff"), ".png"); // this is a hack: if images are png images but they are named *.tiff in the poses file!
+			if (replaceExt && std::string::npos != fname.find(".tiff")) name.replace(fname.find(".tiff"), strlen(".tiff"), ".png"); // this is a hack: if images are png images but they are named *.tiff in the poses file!
+			if (replaceExt && std::string::npos != fname.find(".jpeg")) name.replace(fname.find(".jpeg"), strlen(".jpeg"), ".png"); // this is a hack: if images are png images but they are named *.jpeg in the poses file!
+
 			Image img = load_image( (imgFilePath + "/" + name).c_str(), 0, 0, 3 ); // make sure to load 3 channels!
 			if (!is_empty_image(img))
 			{
@@ -109,7 +132,7 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 				}
 				Image imgs[] = { img,alpha };
 				Image tmp = merge_images_channels( imgs, 2);
-				aos->addView(tmp, pose, name);
+				aos->addView(tmp, pose, name, data);
 				free_image(tmp);
 			}
 			free_image(img);
@@ -126,6 +149,9 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			std::cout << "pose-matrix: " << glm::to_string(aos->getPose(aos->getViews() - 1)) << std::endl;
 			std::cout << "---------------------------------" << std::endl;
 #endif
+
+
+
 		}
 
 	}

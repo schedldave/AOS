@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
+#include <optional>
+#include <any>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
@@ -17,6 +20,8 @@
 class Model;
 class Shader;
 
+typedef std::map<const std::string, std::any> ViewData;
+
 
 typedef struct {
 	//Image* img;
@@ -24,6 +29,7 @@ typedef struct {
 	glm::mat4 pose; // pose (usually provided by pose file)
 	unsigned int ogl_id; // opengl texture id
 	std::string name;
+	ViewData data; // optional and additional data
 } View;
 
 // Airborne Optical Sectioning light field renderer:
@@ -58,7 +64,9 @@ public:
 	AOS(unsigned int width, unsigned int height, float fovDegree = 50.815436217896945f, int preallocate_images = -1);
 	~AOS();
 
-	void addView(Image img, glm::mat4 pose, std::string name = "");
+	//void addView(Image img, glm::mat4 pose, std::string name = "");
+	void addView(Image img, glm::mat4 pose, std::string name = "", ViewData = {});
+
 	//Image getImage(unsigned int idx);
 	glm::mat4 getPose(unsigned int idx) const { return ogl_imgs[idx].pose; }
 	glm::mat4 setPose(unsigned int idx, const glm::mat4 pose) { ogl_imgs[idx].pose = pose; return pose; }
@@ -68,6 +76,15 @@ public:
 	std::string getName(unsigned int idx) const { return ogl_imgs[idx].name; }
 	void removeView(unsigned int idx);
 	void replaceView(unsigned int idx, Image img, glm::mat4 pose, std::string name = "");
+	template<class T>
+	T getData(const unsigned int index, const std::string name)
+	{
+		auto& d = ogl_imgs[index].data;
+		if (d.find(name) == d.end())
+			throw std::invalid_argument("name is not defined!");
+		
+		return std::any_cast<T>(d.at(name));
+	}
 
 	// DEM functions
 	void loadDEM(std::string obj_file);

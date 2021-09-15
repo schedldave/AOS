@@ -171,6 +171,7 @@ int main(int argc, char** argv)
 	// -----------------------
 	AOSGenerator generator;
     generator.Generate(lf, posesFile, imgFolder, maskImage, replaceTiff);
+    auto isVideoDataAvailable = generator.isVideoDataAvailable();
 	CHECK_GL_ERROR
     std::cout << "LF with " << lf->getViews() << " views loaded!" << std::endl;
 
@@ -270,6 +271,18 @@ int main(int argc, char** argv)
                     render_ids.clear();
                     render_ids.push_back(currView);
                 }
+                int cam_id = lf->getData<int>(currView, "cam_id");
+                std::cout << "current cam_id " << cam_id << std::endl; // works!!!
+
+                // ToDo: continue here!!!
+                /*  - add video control "Video"
+                    - play: loop over available "time" in data
+                    - function Get closest frame based on time
+                    <Optional>
+                    - icons with emojis: https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-custom-colorful-icons
+                    - select cam_ids (like single images)
+                    - allow time deltas per cam_id
+                */
                 
                 if (ImGui::TreeNode("Single Images"))
                 {

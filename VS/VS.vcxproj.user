@@ -2,18 +2,18 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json" --mask="..\data\mask.png"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 45 --fov=48.45549063590834 --img="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024" --pose="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\video.json" --mask="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024\alpha.png" -r true</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json" --mask="..\data\mask.png"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 45 --fov=48.45549063590834 --img="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024" --pose="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\video.json" --mask="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024\alpha.png" -r true</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json" --mask="..\data\mask.png"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 45 --fov=48.45549063590834 --img="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024" --pose="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\video.json" --mask="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024\alpha.png" -r true</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-z 51 --fov=32.3443180315651 --img="..\data\20210810_conifer_ex2_set2\colmap\images\cr1024" --pose="..\data\20210810_conifer_ex2_set2\colmap\poses\RGB.json" --mask="..\data\mask.png"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-z 45 --fov=48.45549063590834 --img="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024" --pose="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\video.json" --mask="C:\Users\P22598\Resilio Sync\Indrajit_Rakesh_Data\SITES\20210903_Video_Field\set4\Video_frames_FPS-15\B01-G05\cr1024\alpha.png" -r true</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>
