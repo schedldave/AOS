@@ -80,6 +80,12 @@ void DestroyGlfwWindow(GLFWwindow* window)
     {
         glfwTerminate(); //delete window;
     }
+    /**
+     * WGL and GLX have an unload function to free the module handle.
+     * Call the unload function after your last GLX or WGL API call.
+     */
+    void gladUnloadGLX(void);
+    void gladUnloadWGL(void);
 }
 
 // Fast copy data from a contiguous byte array into the Image.

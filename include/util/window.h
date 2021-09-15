@@ -33,7 +33,15 @@ void DestroyWindow(void)
     if (window)
     {
         glfwTerminate(); //delete window;
+        window = nullptr;
     }
+
+    /**
+     * WGL and GLX have an unload function to free the module handle.
+     * Call the unload function after your last GLX or WGL API call.
+     */
+    void gladUnloadGLX(void);
+    void gladUnloadWGL(void);
 }
 
 

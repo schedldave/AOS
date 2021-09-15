@@ -15,6 +15,7 @@ This repository also contains new and experimental features and thus might not w
 - [x] Command line arguments and help with CLI11: you don't need to modify the main.cpp to load your own data.
 - [x] CMakefile for building with vcpkg (tested under Windows).
 - [x] Shaders are included as strings now. The 'shader' folder is not required anymore after compilation.
+- [x] support for masking / alpha channels (e.g., to remove watermarks, timestamps or any other text)
 
 ### ToDos/Wishlist and Ideas for New Features
 
@@ -24,12 +25,11 @@ This repository also contains new and experimental features and thus might not w
 - [ ] fallback to a simple plane if no DEM is loaded or DEM loading fails.
 - [ ] verify installation on Linux (and MacOS).
 - [ ] consider window size and aspect ratio for rendering (right now we use a default size e.g., 512x512 px)
-- [ ] support for masking / alpha channels (e.g., to remove FLIR/DJI watermarks, timestamps or any other text)
 - [ ] show a wireframe of the digital elevation model
 - [ ] check if float32 ifdef is working on LINUX and older hardware
 - [ ] Image loading: stb_image does not support TIFF so consider switching to SAIL, FreeImage, SDL, or OpenCV
 - [ ] Unittests in C++: https://cmake.org/cmake/help/latest/module/CTest.html  
-- [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648
+- [ ] Disable the OpenGL Window when using the python binding: https://www.glfw.org/docs/latest/context.html#context_offscreen or https://github.com/glfw/glfw/issues/648. DOES NOT WORK!
 - [ ] Optimize min/max computation (used for displaying)
 - [ ] Heatmap visualization for grayscale images
 - [ ] OBJ loading: switch to a more lightweight loader with less dependencies (e.g., https://github.com/tinyobjloader/tinyobjloader) or keep Assimp

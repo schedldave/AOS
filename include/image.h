@@ -70,6 +70,7 @@ Image threshold_image(Image im, float thresh);
 Image collapse_image_layers(Image source, int border);
 Image collapse_images_horz(Image *ims, int n);
 Image collapse_images_vert(Image *ims, int n);
+Image merge_images_channels(Image* ims, int n);
 
 void show_image(Image p, const char *name);
 void show_image_normalized(Image im, const char *name);
@@ -83,7 +84,8 @@ void print_image(Image m);
 
 Image make_image(int w, int h, int c);
 Image make_random_image(int w, int h, int c);
-Image make_empty_image(int w, int h, int c);
+Image make_empty_image(int w=0, int h=0, int c=0);
+Image make_uniform_image(int w, int h, int c, float val);
 void free_image(Image m);
 Image float_to_image_scaled(int w, int h, int c, float *data);
 Image float_to_image(int w, int h, int c, float *data);

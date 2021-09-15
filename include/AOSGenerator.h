@@ -18,7 +18,7 @@ private:
 public:
 	AOSGenerator(void);
 	virtual ~AOSGenerator(void);
-	void Generate( AOS *aos, const std::string &jsonPoseFile, const std::string &imgFilePath = "", const bool replaceExtension = false );
+	void Generate( AOS *aos, const std::string &jsonPoseFile, const std::string &imgFilePath = "", const std::string& maskFile = "", const bool replaceExtension = false);
 };
 
 
