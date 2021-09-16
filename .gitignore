@@ -56,3 +56,4 @@ pyaos/build/temp.win*
 *.pyd
 
 
+*.ini

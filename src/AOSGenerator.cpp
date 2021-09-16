@@ -109,6 +109,8 @@ void AOSGenerator::Generate(AOS* aos, const std::string& jsonPoseFile, const std
 			{
 				int cam_id = jimg[i]["cam_id"];
 				float time = jimg[i]["time"];
+				// hacked in time filter ONLY for DEBUGING! Make sure to remove it!
+				// if (time > 5.0) continue;
 				data = { {"cam_id", cam_id}, {"time", time} };
 			}
 

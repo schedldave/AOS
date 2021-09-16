@@ -88,6 +88,40 @@ void showFPS(GLFWwindow *pWindow)
 	}
 }
 
+auto getClosestFrames(AOS *lf, float time, unsigned int cam_id = -1, float delta = 0.5f)
+{
+    std::vector<unsigned int> render_ids;
+
+
+    for(auto i = 0; i < lf->getSize(); ++i)
+    {
+        auto cid = lf->getData<int>(i, "cam_id");
+        if (cam_id >= 0 && cid != cam_id) continue; // skip if cam_ids do not match
+
+        auto t = lf->getData<float>(i, "time");
+        if (t <= time+delta && t > time-delta)
+        {
+            render_ids.push_back(i);
+        }
+
+    }
+    return render_ids;
+ }
+
+
+void getMinMaxTime(AOS* lf, float &min_time, float &max_time)
+{
+    if (lf->getSize() > 0) // init min/max with first time
+        max_time = min_time = lf->getData<float>(0, "time");
+
+    for (auto i = 1; i < lf->getSize(); ++i)
+    {
+        auto t = lf->getData<float>(i, "time");
+        if (t > max_time) max_time = t;
+        if (t < min_time) min_time = t;
+    }
+}
+
 int main(int argc, char** argv) 
 {
     
@@ -172,6 +206,13 @@ int main(int argc, char** argv)
 	AOSGenerator generator;
     generator.Generate(lf, posesFile, imgFolder, maskImage, replaceTiff);
     auto isVideoDataAvailable = generator.isVideoDataAvailable();
+    std::vector<string> cameraNames;
+    float max_time = 0.0f; float min_time = 0.0f;
+    if (isVideoDataAvailable)
+    {
+        cameraNames = generator.getCameraNames();
+        getMinMaxTime(lf, min_time, max_time);
+    }
 	CHECK_GL_ERROR
     std::cout << "LF with " << lf->getViews() << " views loaded!" << std::endl;
 
@@ -267,23 +308,93 @@ int main(int argc, char** argv)
                     ImGui::TreePop();
                 }
                 // keep current view as pinhole
-                if (pinholeActive) {
+                if (pinholeActive) 
+                {
                     render_ids.clear();
                     render_ids.push_back(currView);
                 }
-                int cam_id = lf->getData<int>(currView, "cam_id");
-                std::cout << "current cam_id " << cam_id << std::endl; // works!!!
+                //int cam_id = lf->getData<int>(currView, "cam_id");
+                //std::cout << "current cam_id " << cam_id << std::endl; // works!!!
 
-                // ToDo: continue here!!!
-                /*  - add video control "Video"
-                    - play: loop over available "time" in data
-                    - function Get closest frame based on time
-                    <Optional>
-                    - icons with emojis: https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-custom-colorful-icons
-                    - select cam_ids (like single images)
-                    - allow time deltas per cam_id
-                */
-                
+                if (isVideoDataAvailable && ImGui::TreeNode("Video"))
+                {
+                    static bool first = true;
+                    static float time = 0.0;
+                    static float fps = 5.0;
+                    static bool loop = true;
+                    static bool play = true;
+                    static std::vector<unsigned int> selected_cam_ids(cameraNames.size());
+                    if (first) {
+                        std::iota(selected_cam_ids.begin(), selected_cam_ids.end(), 0); // init with ids 0 to num_camera_names (e.g, 0,1,2,3,4,5 ... )
+                        first = false;
+                    }
+
+                    std::vector<std::string>views_per_cam_id(cameraNames.size());
+                    render_ids.clear();
+                    for (auto cam_id : selected_cam_ids)
+                    {
+                        auto rids = getClosestFrames(lf, time, cam_id);
+                        for (auto ri : rids)
+                        {
+                            views_per_cam_id[cam_id] += lf->getName(ri);
+                        }
+
+                        render_ids.insert(render_ids.end(), rids.begin(), rids.end());
+                    }
+
+
+                    std::vector<bool> selected;
+                    idxToBoolArray(selected_cam_ids, selected, cameraNames.size());
+                    ImGui::BeginChild("Cameras scrolling", ImVec2(0, 100)); // begin scrolling
+                    for (int n = 0; n < cameraNames.size(); n++) {
+                        sprintf_s(buffer, 512, "[%c] %04d: %s (%s)", selected[n] ? 'X' : ' ', n, cameraNames[n].c_str(), views_per_cam_id[n].c_str());
+                        bool sel = selected[n];
+                        ImGui::Selectable(buffer, &sel);
+                        selected[n] = sel;
+                    }
+                    ImGui::EndChild(); // end scrolling
+                    boolArrayToIdx(selected, selected_cam_ids);
+                    sprintf_s(buffer, 512, "selected %d views", render_ids.size());
+                    ImGui::Text(buffer);
+                    
+                    if (selected_cam_ids.size() != cameraNames.size())
+                    {
+                        ImGui::SameLine();
+                        if (ImGui::Button("select all"))
+                        {
+                            selected_cam_ids = std::vector<unsigned int>(cameraNames.size());
+                            std::iota(selected_cam_ids.begin(), selected_cam_ids.end(), 0); // init with ids 0 to num_camera_names (e.g, 0,1,2,3,4,5 ... )
+                        }
+                    }
+
+                    ImGui::SliderFloat("time", &time, min_time, max_time);
+                    if (ImGui::Button(play ? "pause" : "play" )) play = !play; // toggle play and pause!
+                    ImGui::SameLine();
+                    ImGui::InputFloat("fps", &fps);
+                    //ImGui::SameLine();  
+                    ImGui::Checkbox("loop", &loop);
+                    if (play)
+                    {
+                        time += ImGui::GetIO().DeltaTime * fps;
+                        if (!loop) time = std::min<float>(time, max_time);
+                        while (loop && time > max_time)
+                            time -= (max_time-min_time); // start from the beginning!
+                    }
+
+
+                    
+
+                    ImGui::TreePop(); // TreePop Video
+                    // ToDo: continue here!!!
+                    /*  [x] add video control "Video"
+                        [x] play: loop over available "time" in data
+                        [x] function Get closest frame based on time
+                        <Optional>
+                        - icons with emojis: https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-custom-colorful-icons
+                        [x] select cam_ids (like single images)
+                        - allow time deltas per cam_id for corrections!
+                    */
+                }
                 if (ImGui::TreeNode("Single Images"))
                 {
                     std::vector<bool> selected;
