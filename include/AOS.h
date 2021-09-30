@@ -86,7 +86,7 @@ public:
 	Image renderForward(const glm::mat4 virtual_pose, const float virtual_fovDegree, const std::vector<unsigned int> ids = {});
 
 	Image getXYZ();
-	void display(bool normalize = true, bool flipX=true, bool flipY=true);
+	void display(bool normalize = true, bool flipX = true, bool flipY = true, bool use_colormap = false, glm::ivec3 colormap_rgb = {7, 5, 15});
 	//void display(int display_width, int display_height,  bool normalize = true);
 
 	//void loadViews(std::string json_file, std::string imgs_path = "") {};

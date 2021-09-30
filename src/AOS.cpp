@@ -315,7 +315,7 @@ void AOS::replaceView(unsigned int idx, Image img, glm::mat4 pose, std::string n
 	ogl_imgs[idx] = v; // update in vector
 }
 
-void AOS::display(bool normalize, bool flipX, bool flipY)
+void AOS::display(bool normalize, bool flipX, bool flipY, bool use_colormap, glm::ivec3 rgb_colormap)
 {	
 	//std::cout << std::boolalpha;   
     //std::cout<<normalize<<"\n";
@@ -337,6 +337,9 @@ void AOS::display(bool normalize, bool flipX, bool flipY)
 	}
 	showFboShader->setBool("flipX", flipX);
 	showFboShader->setBool("flipY", flipY);
+	showFboShader->setBool("useCM", use_colormap);
+	showFboShader->setIVec3("rgbCM", rgb_colormap);
+	//if (use_colormap)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tIntegral);
 	renderQuad();

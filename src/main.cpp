@@ -88,6 +88,22 @@ void showFPS(GLFWwindow *pWindow)
 	}
 }
 
+// from: https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
+static void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
 int main(int argc, char** argv) 
 {
     
@@ -99,6 +115,8 @@ int main(int argc, char** argv)
     std::string maskImage = "";
     float demTranslationZ = 0.0f;
     bool tmp_replaceTiff = false;
+    bool normalize = false; bool colormap = false;
+    glm::vec<3, int> colormapRGB({ 7, 5, 15 }); // typical values are here: https://github.com/kbinani/colormap-shaders#gnuplot
 
     // Command line parsing
     CLI::App app{ APP_NAME };
@@ -226,6 +244,20 @@ int main(int argc, char** argv)
                 ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
                 //ImGui::SliderFloat("gamma", &gamma, 0.1f, 5.0f);   // Edit 1 float using a slider from 0.0f to 1.0f
 
+                if (ImGui::TreeNode("Display"))
+                {
+                    ImGui::Checkbox("normalize", &normalize);
+                    ImGui::SameLine(); HelpMarker("Normalize image based on min/max in view. Not useful for color images. Brighntess will change when the camera moves, if enabled. ");
+                    ImGui::Checkbox("use colormap", &colormap);
+                    ImGui::SameLine(); HelpMarker("Display grayscale image (or the red channel) with gnuplot's rgbformulae.");
+                    if (colormap)
+                    {
+                        ImGui::InputInt3("RGB formula", &colormapRGB.r);
+                    }
+
+                    ImGui::TreePop();
+                }
+
                 if (ImGui::TreeNode("Virtual Camera"))
                 {
                     ImGui::InputFloat3("Position", &(camera.Position.x));
@@ -299,6 +331,11 @@ int main(int argc, char** argv)
                         ImGui::SliderFloat3("Translation", &(translate.x),-10,10);
                         ImGui::SliderFloat3("Rotation", &(rotate.x), -180, 180, "%.1f (deg)" );
 
+                        if (ImGui::Button("reset")) {
+                            translate = glm::vec3(0);
+                            rotate = glm::vec3(0);
+                        }
+
                         // update correction matrizes
                         for (unsigned int i = 0; i < lf->getSize(); i++)
                             lf->setPoseCorrection( i, translate,  glm::radians(rotate) );
@@ -332,6 +369,11 @@ int main(int argc, char** argv)
                         ImGui::SameLine();  ImGui::Text("(z)");
                     }
                     ImGui::SliderFloat3("Rotation", &(dem_rotate.x), -180, 180, "%.1f (deg)" );
+                    if (ImGui::Button("reset")) {
+                        dem_translate = glm::vec3(0, 0, demTranslationZ);
+                        dem_rotate = glm::vec3(0);
+                    }
+
                     lf->setDEMTransformation(dem_translate, glm::radians(dem_rotate) );
 
                     ImGui::TreePop();
@@ -355,13 +397,9 @@ int main(int argc, char** argv)
         glViewport(0, 0, display_w, display_h);
         glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        lf->display(false);
+        lf->display(normalize, false, false, colormap, colormapRGB);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-        if (gui) ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        UpdateWindow();
 
         // TIMINGs
         auto end_loop = std::chrono::steady_clock::now();
