@@ -121,10 +121,25 @@ int InitWindowAndGUI(int &width, int &height, const char* appname = "OpenGL")
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // enable experimental docking https://github.com/ocornut/imgui/issues/2109
+
+#ifdef IMGUI_HAS_VIEWPORT
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // enable experimental viewports https://github.com/ocornut/imgui/wiki/Multi-Viewports
+
+        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+#endif
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
         //ImGui::StyleColorsClassic();
+
+        
 
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -142,7 +157,26 @@ int InitWindowAndGUI(int &width, int &height, const char* appname = "OpenGL")
 
 bool firstUpdate = true;
 void UpdateWindow(float deltaTime = 0.0f)
-{
+{   
+
+    if (gui)
+    {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+#ifdef IMGUI_HAS_VIEWPORT
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+        // from https://github.com/ocornut/imgui/blob/docking/examples/example_glfw_opengl3/main.cpp
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+#endif
+    }
     
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
     // -------------------------------------------------------------------------------
