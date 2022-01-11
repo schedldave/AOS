@@ -215,3 +215,9 @@ Single Images         |  Airborne Optical Sectioning
   - [Video on YouTube](https://www.youtube.com/watch?v=ELnvBfafnRA&ab_channel=JKUCG) 
 
 </details>
+
+---
+# License / Copyright
+
+This code is based on the [JKU-ICG/AOS](https://github.com/JKU-ICG/AOS) repository that is published under a free for non-commercial use license (commerical use is restricted; see the original repository for details). I am making my changes publicly available to researchers. The implementation may be used for academic and research purposes, but not to be used for commercial purposes, nor should they appear in a product for sale without my permission. </br>
+**Copyright: [Dr. David C. Schedl](mailto:david.schedl@fh-hagenberg.at)** </br>
